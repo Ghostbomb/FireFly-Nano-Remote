@@ -6,8 +6,10 @@
 
 #define FAKE_UART // Comment out after pairing the remote and connecting VESC
 
-#define DEBUG // Uncomment DEBUG if you need to debug the remote
+// #define DEBUG // Uncomment DEBUG if you need to debug the remote
+#define DEBUG_OP //extra Debugging, basiccely showing everything its doing
 
+#define RECEIVER_SCREEN
 const COMM_PACKET_ID VESC_COMMAND = COMM_GET_VALUES; // VESC
 // const COMM_PACKET_ID VESC_COMMAND = COMM_GET_UNITY_VALUES; // Enertion Unity
 
@@ -47,20 +49,20 @@ const int REMOTE_SLEEP_TIMEOUT = 180; // seconds to go to sleep mode
 const int DISPLAY_BATTERY_MIN = 15;
 
 // VESC current, for graphs only
-const int MOTOR_MIN = -30;
-const int MOTOR_MAX = 30;
-const int BATTERY_MIN = -30;
-const int BATTERY_MAX = 30;
+const int MOTOR_MIN = -45;
+const int MOTOR_MAX = 45;
+const int BATTERY_MIN = -12;
+const int BATTERY_MAX = 20;
 
 // default board configuration
 const int MAX_SPEED = 30;       // KM/H
 const int MAX_RANGE = 30;       // KM
 const int BATTERY_CELLS = 10;
-const int BATTERY_TYPE = 0;     // 0: LI-ION | 1: LIPO
-const int MOTOR_POLES = 22;
+const int BATTERY_TYPE = 1;     // 0: LI-ION | 1: LIPO
+const int MOTOR_POLES = 14;
 const int WHEEL_DIAMETER = 90;
-const int WHEEL_PULLEY = 1;
-const int MOTOR_PULLEY = 1;
+const int WHEEL_PULLEY = 36;
+const int MOTOR_PULLEY = 15;
 
 #define VERSION 2
 
@@ -196,5 +198,11 @@ const int default_throttle = 127;
 #else
   #define debug(x)
 #endif
+#ifdef DEBUG_OP
+  #define debug_E(x) Serial.println (x)
+#else
+  #define debug_E(x)
+#endif
+
 
 #endif

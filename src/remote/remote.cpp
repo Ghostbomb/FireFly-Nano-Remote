@@ -1,8 +1,10 @@
 
 #include "remote.h"
+// #include "heltec-2.h" //only for testing purposes. COMMENT WHEN COMPILING CODE
 
 // define display
 Adafruit_SSD1306 display(RST_OLED);
+// Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 Smoothed <double> batterySensor;
 
@@ -70,14 +72,22 @@ void brownoutInit() {
 void setup() {
 
   startupTime = millis();
+    // display.powerOn();
 
   #ifdef DEBUG
-    Serial.begin(115200);
+    Serial.begin(9600);
+    debug("Debug Mode ON");
   #endif
+  #ifdef DEBUG_OP
+    Serial.begin(9600);
+    debug("Over Powered Debug Mode ON");
+  #endif  
 
   // while (!Serial) { ; }
 
   loadSettings();
+  debug_E("Loading settings 85969");
+
 
   #ifdef PIN_VIBRO
     pinMode(PIN_VIBRO, OUTPUT);
@@ -125,8 +135,16 @@ void setup() {
       NULL,       /* Task handle. */
       0);  /* Core where the task should run */
   #endif
+  // display.begin(SSD1306_SWITCHCAPVCC, 0x3C); debug_E("DIsplay begin 94149");
+  // display.powerOn(); debug_E("Power On display 52434");
+  
+
+  // drawSettingsMenu();
+  // drawExtPage();
+  // debug_E("Draw Settings Menu");
 
   debug("** Esk8-remote transmitter **");
+  debug_E("Finshed Startup 63664");
 }
 
 #ifdef ESP32 // core 0
@@ -140,6 +158,7 @@ void setup() {
 
 void loop() { // core 1
 
+  // debug("PIN_Trigger Status = " + String(triggerActive()));
   #ifdef ARDUINO_SAMD_ZERO
     radioLoop();
   #endif
@@ -160,6 +179,11 @@ void radioLoop() {
 
   calculateThrottle();
   transmitToReceiver();
+  // if (PINNUTTONSTATUSnumberi == 100){
+  debug("PIN_BUTTON Status = " + String(buttonVal));
+  // debug("PIN_Trigger Status = " + String(triggerActive()));
+  
+// }else { PINNUTTONSTATUSnumberi++; }
 }
 
 void checkBatteryLevel() {
@@ -190,6 +214,8 @@ void keepAlive() {
 void calculateThrottle() {
 
   int position = readThrottlePosition();
+
+  // debug("State"+String(state));
 
   switch (state) {
 
@@ -240,7 +266,7 @@ void calculateThrottle() {
   case MENU: // navigate menu
     // idle
     throttle = default_throttle;
-
+    debug_E("Entering MENU");
     if (position != default_throttle) {
       menuWasUsed = true;
     }
@@ -257,6 +283,8 @@ void calculateThrottle() {
     }
     break;
   }
+
+  debug("Trottle:"+String(position));
 
   // wheel was used
   if (position != default_throttle) keepAlive();
@@ -325,7 +353,7 @@ void handleButtons() {
 void sleep()
 {
   if (power == false) { return; }
-
+  debug_E("Sleep Mode Start 86603");
   // turn off screen
   display.powerOff();
   digitalWrite(LED, LOW);
@@ -420,8 +448,9 @@ void sleep()
   #endif
 
   digitalWrite(LED, HIGH);
-
+  // display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
   display.powerOn();
+  debug_E("Turning on display out of sleep mode 18866");
   power = true;
 
   // in case of board change
@@ -540,7 +569,8 @@ bool inRange(short val, short minimum, short maximum) {
    Return true if trigger is activated, false otherwice
 */
 bool triggerActive() {
-  bool active = digitalRead(PIN_TRIGGER) == LOW;
+  bool active = digitalRead(PIN_TRIGGER) == LOW; //Probably change this if inverted
+  // debug("Trigger active: " + String(active) + " PIN_TRIGGER: " + String(PIN_TRIGGER)+" active "+ String(active));
   if (active) keepAlive();
   return active;
 }
@@ -774,6 +804,8 @@ void prepatePacket() {
   case NORMAL: // Send throttle to the receiver.
     remPacket.command = SET_THROTTLE;
     remPacket.data = round(throttle);
+    debug("Sending> " + String(throttle));
+    // debug("HAll value= " + String(hallValue));
     break;
 
   case MENU:
@@ -999,22 +1031,25 @@ float batteryPackPercentage( float voltage ) {
    Update the OLED for each loop
 */
 void updateMainDisplay()
-{
+{    debug_E("Update Diplay 68573");
+
   display.clearDisplay();
   display.setTextColor(WHITE);
 
-  if (isShuttingDown()) drawShutdownScreen();
+  if (isShuttingDown()){ drawShutdownScreen(); 
+  debug_E("Update Diplay 55947");
+  }
 
   else switch (state) {
 
     case CONNECTING:
-      drawConnectingScreen();
-      drawThrottle();
+      drawConnectingScreen(); debug_E("Update Diplay 19450");
+      drawThrottle(); 
       break;
 
     case PAIRING:
-      drawPairingScreen();
-      drawThrottle();
+      drawPairingScreen(); debug_E("Update Diplay 29450");
+      drawThrottle(); 
       break;
 
     default: // connected
@@ -1022,13 +1057,13 @@ void updateMainDisplay()
       switch (page) {
         case PAGE_MAIN:
           drawBatteryLevel(); // 2 ms
-          drawMode();
+          drawMode(); debug_E("Update Diplay 39450");
           drawSignal(); // 1 ms
           drawMainPage();
           break;
-        case PAGE_EXT:  drawExtPage(); break;
-        case PAGE_MENU: drawSettingsMenu(); break;
-        case PAGE_DEBUG: drawDebugPage(); break;
+        case PAGE_EXT:  drawExtPage(); debug_E("Update Diplay 65921"); break; 
+        case PAGE_MENU: drawSettingsMenu(); debug_E("Update Diplay 25921"); break;
+        case PAGE_DEBUG: drawDebugPage(); debug_E("Update Diplay 20921"); break;
       }
   }
 
@@ -1691,6 +1726,7 @@ int checkButton() {
 
   int event = 0;
   buttonVal = digitalRead(PIN_BUTTON);
+
 
   // Button pressed down
   if (buttonVal == LOW && buttonLast == HIGH && (millis() - upTime) > debounce)

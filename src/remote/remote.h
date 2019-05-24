@@ -8,6 +8,9 @@
 #include "Adafruit_SSD1306.h"
 #include <Smoothed.h>
 
+//Debug Crap
+int PINNUTTONSTATUSnumberi;
+
 #ifdef ARDUINO_SAMD_ZERO
 
   const int MIN_HALL = 18;

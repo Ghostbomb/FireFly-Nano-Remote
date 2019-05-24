@@ -1,4 +1,5 @@
 #include "receiver.h"
+// #include "heltec-2.h" 
 
 #ifdef ARDUINO_SAMD_FEATHER_M0 // Feather M0 w/Radio
   #include <RH_RF69.h>
@@ -40,6 +41,9 @@ unsigned long statusCycleTime, previousStatusMillis, currentMillis, startCycleMi
 
 unsigned long lastDelay;
 
+#define WIFI_NETWORK  "FireFly Remote"
+#define WIFI_PASSWORD  "eVF8bV7C%FTyE4q#e%g8Zl"
+
 // Initiate VescUart class for UART communication
 
 void setup()
@@ -48,6 +52,7 @@ void setup()
   delay(1000);
 
   Serial.begin(115200);
+  debug_E("Serial Begin");
 
   // while (!Serial) {}; // wait for serial port to connect. Needed for native USB port only
 
@@ -55,8 +60,10 @@ void setup()
 
   //loadEEPROMSettings();
   setDefaultEEPROMSettings();
+  debug_E("Loading EEPORM");
 
   calculateRatios();
+  debug_E("Calculating Ratios");
 
   pinMode(LED, OUTPUT);
 
@@ -98,7 +105,7 @@ void setup()
 
   #endif
 
-  debug("Setup complete - begin listening");
+  debug("Setup complete - begining to listening");
 
   pinMode(Vext, OUTPUT);
   digitalWrite(Vext, LOW);
@@ -366,6 +373,7 @@ void loop() { // core 1
   // get telemetry;
   getUartData(); // every 250  ms
 
+///*
   #ifdef ARDUINO_SAMD_ZERO
     radioExchange();
     stateMachine();
@@ -374,6 +382,14 @@ void loop() { // core 1
     updateScreen(); // 25 ms
     vTaskDelay(1);
   #endif
+  //*/
+/*
+  #ifdef RECEIVER_SCREEN
+    if (state == UPDATE) ArduinoOTA.handle();
+    updateScreen(); // 25 ms
+    vTaskDelay(1);
+    #endif
+    */
 }
 
 #ifdef ESP32

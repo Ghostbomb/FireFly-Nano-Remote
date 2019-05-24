@@ -1,5 +1,23 @@
 #include <stdint.h>
 
+
+
+
+
+
+
+
+//move back to \src\boards
+
+
+
+
+
+
+
+
+
+
 /*  Hardware related definitions for Heltec V2 Board
 // ATTENTION: check your board version!
 // This settings are for boards labeled v2 on pcb
@@ -13,9 +31,10 @@
 //
 
 // Pin definitions
+// #define LED           25
 #define PIN_BUTTON    12
-#define PIN_TRIGGER   32
-#define ADC_THROTTLE  ADC1_GPIO38_CHANNEL // ADC1_CHANNEL_2
+#define PIN_TRIGGER   32  //default 32
+#define ADC_THROTTLE  ADC1_GPIO38_CHANNEL // ADC1_CHANNEL_2 Pin:38
 
 #define PIN_BATTERY   13
 
@@ -31,5 +50,5 @@
 #define BATT_FACTOR 2 // voltage divider 100k/100k on board
 
 // Pins for LORA chip SPI interface, reset line and interrupt lines
-// #define RF_RST  23 // RST_LoRa = 14;
-// #define RF_DI2  32 // DIO2 = 34
+// #define RF_RST  14 // RST_LoRa = 14;
+// #define RF_DI2  34 // DIO2 = 34
