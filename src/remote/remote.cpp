@@ -188,6 +188,7 @@ void radioLoop() {
 
 void checkBatteryLevel() {
 
+  debug_E("checkBatteryLevel");
   batteryLevel = getBatteryLevel();
 
   if (batteryLevel >= DISPLAY_BATTERY_MIN) {
