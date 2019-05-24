@@ -9,7 +9,7 @@
 // #define DEBUG // Uncomment DEBUG if you need to debug the remote
 #define DEBUG_OP //extra Debugging, basiccely showing everything its doing
 
-#define RECEIVER_SCREEN
+// #define RECEIVER_SCREEN
 const COMM_PACKET_ID VESC_COMMAND = COMM_GET_VALUES; // VESC
 // const COMM_PACKET_ID VESC_COMMAND = COMM_GET_UNITY_VALUES; // Enertion Unity
 

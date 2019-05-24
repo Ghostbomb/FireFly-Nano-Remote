@@ -1,23 +1,5 @@
 #include <stdint.h>
 
-
-
-
-
-
-
-
-//move back to \src\boards
-
-
-
-
-
-
-
-
-
-
 /*  Hardware related definitions for Heltec V2 Board
 // ATTENTION: check your board version!
 // This settings are for boards labeled v2 on pcb

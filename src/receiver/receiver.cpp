@@ -1,5 +1,5 @@
 #include "receiver.h"
-// #include "heltec-2.h" 
+// #include "heltec-2.h" //only for testing purposes. COMMENT WHEN COMPILING CODE
 
 #ifdef ARDUINO_SAMD_FEATHER_M0 // Feather M0 w/Radio
   #include <RH_RF69.h>
