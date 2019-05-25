@@ -51,7 +51,7 @@ static void rtc_isr(void* arg)
 #define BROWNOUT_DET_LVL 0
 
 void brownoutInit() {
-
+  debug("Initializing Brownout");
   // enable brownout detector
   REG_WRITE(RTC_CNTL_BROWN_OUT_REG,
           RTC_CNTL_BROWN_OUT_ENA /* Enable BOD */
@@ -162,9 +162,15 @@ void loop() { // core 1
   #ifdef ARDUINO_SAMD_ZERO
     radioLoop();
   #endif
+  // drawboxtest();
 
   checkBatteryLevel();
   handleButtons();
+  
+  // drawPairingScreen();
+  // debug_E("draw pairing screasd");
+  // drawThrottle();
+  // debug_E("sent trhottle draw commamnd");
 
   // Call function to update display
   if (displayOn) updateMainDisplay();
@@ -181,7 +187,7 @@ void radioLoop() {
   transmitToReceiver();
   // if (PINNUTTONSTATUSnumberi == 100){
   // debug("PIN_BUTTON Status = " + String(buttonVal));
-  debug("PIN_Trigger Status = " + String(triggerActive()));
+  // debug("PIN_Trigger Status = " + String(triggerActive()));
   
 // }else { PINNUTTONSTATUSnumberi++; }
 }
@@ -190,6 +196,8 @@ void checkBatteryLevel() {
 
   // debug_E("checkBatteryLevel");
   batteryLevel = getBatteryLevel();
+  
+  debug("Battery Level: " + String(batteryLevel));
 
   if (batteryLevel >= DISPLAY_BATTERY_MIN) {
     if (!displayOn) {
@@ -216,13 +224,14 @@ void calculateThrottle() {
 
   int position = readThrottlePosition();
 
-  // debug("State"+String(state));
+  debug("State "+String(state));
 
   switch (state) {
 
   case PAIRING:
   case CONNECTING:
     throttle = position; // show debug info
+    debug("CONNECTING Throttle Position" + String(position));
     break;
 
   case IDLE: //
@@ -244,12 +253,13 @@ void calculateThrottle() {
     if (stopped && secondsSince(lastInteraction) > REMOTE_SLEEP_TIMEOUT) sleep();
     break;
 
-  case NORMAL:
+  case NORMAL: //state 1
     throttle = position;
 
-    // activate cruise mode?
+    // activate cruise mode?. Press trigger while moving to activate cruise control.
     if (triggerActive() && throttle == default_throttle && speed() > 3) {
       cruiseSpeed = speed();
+      debug("activate cruise mode?");
       // cruiseThrottle = throttle;
       state = CRUISE;
     }
@@ -259,7 +269,7 @@ void calculateThrottle() {
       if (secondsSince(stopTime) > REMOTE_LOCK_TIMEOUT) {
         // lock remote
         state = IDLE;
-        debug("locked");
+        debug("activate deadman switch LOCKED");
       }
     }
     break;
@@ -267,7 +277,7 @@ void calculateThrottle() {
   case MENU: // navigate menu
     // idle
     throttle = default_throttle;
-    debug_E("Entering MENU");
+    debug("Navitage Menu");
     if (position != default_throttle) {
       menuWasUsed = true;
     }
@@ -383,7 +393,7 @@ void sleep()
   #elif ESP32
 
     // wait for button release
-    while (pressed(PIN_BUTTON)) vTaskDelay(10);
+    while (pressed(PIN_BUTTON)) vTaskDelay(10); //power off
 
     // keep RTC on
     esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_PERIPH, ESP_PD_OPTION_ON);
@@ -570,7 +580,7 @@ bool inRange(short val, short minimum, short maximum) {
    Return true if trigger is activated, false otherwice
 */
 bool triggerActive() {
-  bool active = digitalRead(PIN_TRIGGER) == LOW; //Probably change this if inverted
+  bool active = digitalRead(PIN_TRIGGER) == LOW; //Probably change this if inverted. LOW 0, HIGH 1
   // debug("Trigger active: " + String(active) + " PIN_TRIGGER: " + String(PIN_TRIGGER)+" active "+ String(active));
   if (active) keepAlive();
   return active;
@@ -1035,9 +1045,11 @@ void updateMainDisplay()
 {    debug_E("Update Diplay 68573");
 
   display.clearDisplay();
+  debug_E("Clear Display 27914");
   display.setTextColor(WHITE);
 
-  if (isShuttingDown()){ drawShutdownScreen(); 
+  if (isShuttingDown()){ 
+  drawShutdownScreen(); 
   debug_E("Update Diplay 55947");
   }
 
@@ -1084,6 +1096,7 @@ void drawShutdownScreen()
 void drawPairingScreen() {
 
   display.setRotation(DISPLAY_ROTATION);
+  debug_E("draw Paring Screen 54201");
 
   // blinking icon
   if (millisSince(lastSignalBlink) > 500) {
@@ -1155,17 +1168,19 @@ void drawConnectingScreen() {
 }
 
 void drawThrottle() {
-
+ 
   if (throttle > 127) {
     // right side - throttle
     int h = map(throttle - 127, 0, 127, 0, 128);
     drawVLine(63, 128 - h, h); // nose
+    debug_E("drawing throttle right");
   }
 
   if (throttle < 127) {
     // left side - brake
     int h = map(throttle, 0, 127, 128, 0);
     drawVLine(0, 0, h); // nose
+    debug_E("drawing throttle left");
   }
 }
 

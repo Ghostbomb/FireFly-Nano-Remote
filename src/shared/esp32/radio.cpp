@@ -10,7 +10,7 @@
    Initiate the radio module
 */
 void initRadio() {
-
+  debug("Initialize Radio");
   // reset radio
   pinMode(RST_LoRa, OUTPUT);
 

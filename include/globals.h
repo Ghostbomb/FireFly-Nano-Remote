@@ -4,10 +4,10 @@
 #include <Arduino.h>
 #include <datatypes.h>
 
-#define FAKE_UART // Comment out after pairing the remote and connecting VESC
+// #define FAKE_UART // Comment out after pairing the remote and connecting VESC
 
-#define DEBUG // Uncomment DEBUG if you need to debug the remote
-#define DEBUG_OP //extra Debugging, basiccely showing everything its doing
+// #define DEBUG // Uncomment DEBUG if you need to debug the remote
+// #define DEBUG_OP //extra Debugging, basiccely showing everything its doing
 
 // #define RECEIVER_SCREEN
 const COMM_PACKET_ID VESC_COMMAND = COMM_GET_VALUES; // VESC
@@ -46,7 +46,7 @@ const int REMOTE_LOCK_TIMEOUT = 10; // seconds to lock throttle when idle
 const int REMOTE_SLEEP_TIMEOUT = 180; // seconds to go to sleep mode
 
 // turn off display if battery < 15%
-const int DISPLAY_BATTERY_MIN = 15;
+const int DISPLAY_BATTERY_MIN = 0;
 
 // VESC current, for graphs only
 const int MOTOR_MIN = -45;
@@ -87,8 +87,8 @@ const uint8_t SET_STATE     = 4;
 
 // state machine
 enum AppState {
-  IDLE,       // remote is not connected
-  NORMAL,
+  IDLE,       // remote is not connected //state 0
+  NORMAL,     //state 1
   PUSHING,
   CRUISE,
   ENDLESS,
