@@ -180,15 +180,15 @@ void radioLoop() {
   calculateThrottle();
   transmitToReceiver();
   // if (PINNUTTONSTATUSnumberi == 100){
-  debug("PIN_BUTTON Status = " + String(buttonVal));
-  // debug("PIN_Trigger Status = " + String(triggerActive()));
+  // debug("PIN_BUTTON Status = " + String(buttonVal));
+  debug("PIN_Trigger Status = " + String(triggerActive()));
   
 // }else { PINNUTTONSTATUSnumberi++; }
 }
 
 void checkBatteryLevel() {
 
-  debug_E("checkBatteryLevel");
+  // debug_E("checkBatteryLevel");
   batteryLevel = getBatteryLevel();
 
   if (batteryLevel >= DISPLAY_BATTERY_MIN) {
@@ -285,7 +285,7 @@ void calculateThrottle() {
     break;
   }
 
-  debug("Trottle:"+String(position));
+  // debug("Trottle:"+String(position));
 
   // wheel was used
   if (position != default_throttle) keepAlive();
@@ -805,7 +805,7 @@ void prepatePacket() {
   case NORMAL: // Send throttle to the receiver.
     remPacket.command = SET_THROTTLE;
     remPacket.data = round(throttle);
-    debug("Sending> " + String(throttle));
+    // debug("Sending> " + String(throttle));
     // debug("HAll value= " + String(hallValue));
     break;
 
