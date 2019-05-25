@@ -580,7 +580,7 @@ bool inRange(short val, short minimum, short maximum) {
    Return true if trigger is activated, false otherwice
 */
 bool triggerActive() {
-  bool active = digitalRead(PIN_TRIGGER) == LOW; //Probably change this if inverted. LOW 0, HIGH 1
+  bool active = digitalRead(PIN_TRIGGER) == HIGH; //Probably change this if inverted. LOW 0, HIGH 1
   // debug("Trigger active: " + String(active) + " PIN_TRIGGER: " + String(PIN_TRIGGER)+" active "+ String(active));
   if (active) keepAlive();
   return active;

@@ -5,3 +5,4 @@
 .gcc-flags.json
 .vscode
 nano.code-workspace
+globals.h
