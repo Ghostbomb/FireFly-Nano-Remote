@@ -289,23 +289,16 @@ void updateScreen() {
 
         display.setCursor(0, 20);
         display.println("THR: " + String(map(throttle, 0, 255, -100, 100)) + "%");
-        display.println("SPD: " + String(telemetry.getSpeed(),1) + " " + ALT_DISTANCE_UNIT);
+        display.println("SPD: " + String(telemetry.getSpeed(),1)/* + " " + SPEED_UNIT*/);
       }
       break;
   }
 
   // ---- status ----
   display.setTextColor(WHITE);
-  #ifdef MilesSetup
-    String s = getState() + "  " +
-      String(telemetry.getVoltage(), 1) + "v  " +
-      String((telemetry.getDistance()*0.621371), 1) + DISTANCE_UNIT;
-  #endif
-  #ifndef MilesSetup
-    String s = getState() + "  " +
-      String(telemetry.getVoltage(), 1) + "v  " +
-      String(telemetry.getDistance(), 1) + DISTANCE_UNIT;
-  #endif
+  String s = getState() + "  " +
+    String(telemetry.getVoltage(), 1) + "v  " +
+    String((telemetry.getDistance()), 1) + DISTANCE_UNIT;
 
   #ifdef FAKE_UART
     s = "Board ID: " + String(boardID, HEX);

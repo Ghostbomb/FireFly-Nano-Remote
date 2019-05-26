@@ -1534,20 +1534,10 @@ void drawMainPage() {
   //  display.drawFrame(0,0,64,128);
 
   // --- Speed ---
-  #ifdef MilesSetup
-  value = (speed()*0.621371);
-  #endif
-  #ifndef MilesSetup
-  value = speed();
-  #endif
+  value = (speed());
 
   float speedMax = boardConfig.maxSpeed;
-  #ifdef MilesSetup
   String m = SPEED_UNIT;
-  #endif
-  #ifndef MilesSetup
-  String m = SPEED_UNIT;
-  #endif
 
   drawStringCenter(String(value, 0), m, y);
 
@@ -1637,34 +1627,30 @@ void drawMainPage() {
   }
 
   // --- Distance in km/miles ---
-  #ifdef MilesSetup
-  value = ((telemetry.getDistance())*0.621371);
-  #endif
-  #ifndef MilesSetup
+
   value = telemetry.getDistance();
-  #endif
 
   y = 118;
 
   #ifdef MilesSetup
   String km;
   if (value >= 1) {
-    km = String(value, 0);
+    km = String(value, 0); //unit: miles
     drawStringCenter(km, DISTANCE_UNIT, y);
   } else {
-    km = String(value * 5280, 0);
-    drawStringCenter(km, "ft", y);
+    km = String(value * 5280, 0); //converts to feet
+    drawStringCenter(km, SMALL_DISTANCE_UNIT, y);
   }
   #endif
 
   #ifndef MilesSetup
   String km;
   if (value >= 1) {
-    km = String(value, 0);
+    km = String(value, 0); //unit: kilometers
     drawStringCenter(km, DISTANCE_UNIT, y);
   } else {
-    km = String(value * 1000, 0);
-    drawStringCenter(km, "m", y);
+    km = String(value * 1000, 0); //converts to meters
+    drawStringCenter(km, SMALL_DISTANCE_UNIT, y);
   }
   #endif
 

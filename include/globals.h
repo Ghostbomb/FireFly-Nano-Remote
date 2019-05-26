@@ -72,10 +72,14 @@ const int MOTOR_PULLEY = 15;
 
 //MPH calculations DON'T CHANGE
 #ifdef MilesSetup
-const float PUSHING_SPEED = (C_PUSHING_SPEED*1.60934);
-const float MAX_PUSHING_SPEED = (C_MAX_PUSHING_SPEED*1.60934); 
-const int MAX_SPEED = (C_MAX_SPEED*1.60934);
-const int MAX_RANGE = (C_MAX_RANGE*1.60934);
+const float PUSHING_SPEED = (C_PUSHING_SPEED);
+const float MAX_PUSHING_SPEED = (C_MAX_PUSHING_SPEED); 
+const int MAX_SPEED = (C_MAX_SPEED);
+const int MAX_RANGE = (C_MAX_RANGE);
+const char DISTANCE_UNIT[3] = "mi";
+const char ALT_DISTANCE_UNIT[3] = "mi";
+const char SMALL_DISTANCE_UNIT[3] = "ft";
+const char SPEED_UNIT[4] = "mph";
 #endif
 
 //KMH calculations DON'T CHANGE
@@ -84,6 +88,10 @@ const float PUSHING_SPEED = C_PUSHING_SPEED;
 const float MAX_PUSHING_SPEED = C_MAX_PUSHING_SPEED;
 const int MAX_SPEED = C_MAX_SPEED;
 const int MAX_RANGE = C_MAX_RANGE;
+const char DISTANCE_UNIT[3] = "km";
+const char ALT_DISTANCE_UNIT[2] = "k";
+const char SMALL_DISTANCE_UNIT[3] = "m";
+const char SPEED_UNIT[5] = "km/h";
 #endif
 
 const float minCellVoltage = (BATTERY_VOLTAGE_CUTOFF_END/BATTERY_CELLS);
@@ -181,15 +189,26 @@ struct TelemetryPacket {
   int16_t f2wi(float f) { return f * 100; } // pack float
   float w2fi(int16_t w) { return float(w) / 100; }; // unpack float
 
+  #ifdef MilesSetup
+  float getSpeed() { return (w2f(speed)); }
+  void setSpeed(float f) { speed = (f2w(f)*0.621371); }
+  #endif
+  #ifndef MilesSetup
   float getSpeed() { return w2f(speed); }
   void setSpeed(float f) { speed = f2w(f); }
+  #endif
 
   float getVoltage() { return w2f(voltage); }
   void setVoltage(float f) { voltage = f2w(f); }
 
+  #ifdef MilesSetup
+  float getDistance() { return (w2f(distance)); }
+  void setDistance(float f) { distance = (f2w(f)*0.621371); }
+  #endif
+  #ifndef MilesSetup
   float getDistance() { return w2f(distance); }
   void setDistance(float f) { distance = f2w(f); }
-
+  #endif
   float getMotorCurrent() { return w2fi(motorCurrent); }
   void setMotorCurrent(float f) { motorCurrent = f2wi(f); }
 
