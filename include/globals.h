@@ -20,8 +20,12 @@ const COMM_PACKET_ID VESC_COMMAND = COMM_GET_VALUES; // VESC
   Slide the board backwards while standing on it or foot brake
   to produce a spike in the current and stop the board.
 */
-const bool  AUTO_CRUISE_ON = false;     // disabled by default
-const float PUSHING_SPEED = 12.0;       // km/h
+
+#define MilesSetup     //UNCOMMENT for Miles per hour. Then change number below to miles per hour if uncommented(defined)
+
+//Auto Cruise
+const bool  AUTO_CRUISE_ON = true;     // disabled by default
+const float C_PUSHING_SPEED = 12.0;       // Pushing Speed to initiate the Auto Cruise
 const float PUSHING_TIME = 3.0;         // seconds
 const float CRUISE_CURRENT_SPIKE = 5.0; // Amps
 
@@ -30,7 +34,7 @@ const float AUTO_CRUISE_TIME = 30.0;    // seconds
 const float CRUISE_CURRENT_LOW = 5.0;   // Amps
 
 // auto stop if remote is off and speed is over 20 km/h
-const float MAX_PUSHING_SPEED = 20.0;   // km/h
+const float C_MAX_PUSHING_SPEED = 20.0;   // this should be in mph if MilesSetup is defined
 
 // Auto stop (in seconds)
 const float AUTO_BRAKE_TIME = 5.0;    // time to apply the full brakes
@@ -46,7 +50,7 @@ const int REMOTE_LOCK_TIMEOUT = 10; // seconds to lock throttle when idle
 const int REMOTE_SLEEP_TIMEOUT = 180; // seconds to go to sleep mode
 
 // turn off display if battery < 15%
-const int DISPLAY_BATTERY_MIN = 0;
+const int DISPLAY_BATTERY_MIN = 0; //15 default
 
 // VESC current, for graphs only
 const int MOTOR_MIN = -45;
@@ -55,14 +59,31 @@ const int BATTERY_MIN = -12;
 const int BATTERY_MAX = 20;
 
 // default board configuration
-const int MAX_SPEED = 30;       // KM/H
-const int MAX_RANGE = 30;       // KM
+const int C_MAX_SPEED = 30;       // Max Speed
+const int C_MAX_RANGE = 30;       // MAX RANGE
 const int BATTERY_CELLS = 10;
 const int BATTERY_TYPE = 1;     // 0: LI-ION | 1: LIPO
 const int MOTOR_POLES = 14;
 const int WHEEL_DIAMETER = 90;
 const int WHEEL_PULLEY = 36;
 const int MOTOR_PULLEY = 15;
+
+//MPH calculations DON'T CHANGE
+#ifdef MilesSetup
+const float PUSHING_SPEED = (C_PUSHING_SPEED*1.60934);
+const float MAX_PUSHING_SPEED = (C_MAX_PUSHING_SPEED*1.60934); 
+const int MAX_SPEED = (C_MAX_SPEED*1.60934);
+const int MAX_RANGE = (C_MAX_RANGE*1.60934);
+#endif
+
+//KMH calculations DON'T CHANGE
+#ifndef MilesSetup
+const float PUSHING_SPEED = C_PUSHING_SPEED;
+const float MAX_PUSHING_SPEED = C_MAX_PUSHING_SPEED;
+const int MAX_SPEED = C_MAX_SPEED;
+const int MAX_RANGE = C_MAX_RANGE;
+#endif
+
 
 #define VERSION 2
 

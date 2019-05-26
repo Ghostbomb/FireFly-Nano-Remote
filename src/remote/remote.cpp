@@ -1541,10 +1541,20 @@ void drawMainPage() {
   //  display.drawFrame(0,0,64,128);
 
   // --- Speed ---
+  #ifdef MilesSetup
+  value = (speed()*0.621371);
+  #endif
+  #ifndef MilesSetup
   value = speed();
-  float speedMax = boardConfig.maxSpeed;
+  #endif
 
-  String m = "km/h";
+  float speedMax = boardConfig.maxSpeed;
+  #ifdef MilesSetup
+  String m = SPEED_UNIT;
+  #endif
+  #ifndef MilesSetup
+  String m = SPEED_UNIT;
+  #endif
 
   drawStringCenter(String(value, 0), m, y);
 
@@ -1633,19 +1643,37 @@ void drawMainPage() {
     }
   }
 
-  // --- Distance in km ---
+  // --- Distance in km/miles ---
+  #ifdef MilesSetup
+  value = ((telemetry.getDistance())*0.621371);
+  #endif
+  #ifndef MilesSetup
   value = telemetry.getDistance();
-  String km;
+  #endif
 
   y = 118;
 
+  #ifdef MilesSetup
+  String km;
   if (value >= 1) {
     km = String(value, 0);
-    drawStringCenter(km, "km", y);
+    drawStringCenter(km, DISTANCE_UNIT, y);
+  } else {
+    km = String(value * 5280, 0);
+    drawStringCenter(km, "ft", y);
+  }
+  #endif
+
+  #ifndef MilesSetup
+  String km;
+  if (value >= 1) {
+    km = String(value, 0);
+    drawStringCenter(km, DISTANCE_UNIT, y);
   } else {
     km = String(value * 1000, 0);
     drawStringCenter(km, "m", y);
   }
+  #endif
 
   // max distance
   int range = boardConfig.maxRange;
