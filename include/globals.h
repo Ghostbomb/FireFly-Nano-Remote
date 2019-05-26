@@ -20,8 +20,12 @@ const COMM_PACKET_ID VESC_COMMAND = COMM_GET_VALUES; // VESC
   Slide the board backwards while standing on it or foot brake
   to produce a spike in the current and stop the board.
 */
-const bool  AUTO_CRUISE_ON = false;     // disabled by default
-const float PUSHING_SPEED = 12.0;       // km/h
+
+#define MilesSetup     //UNCOMMENT for Miles per hour. Then change number below to miles per hour if uncommented(defined)
+
+//Auto Cruise
+const bool  AUTO_CRUISE_ON = true;     // disabled by default
+const float C_PUSHING_SPEED = 12.0;       // Pushing Speed to initiate the Auto Cruise
 const float PUSHING_TIME = 3.0;         // seconds
 const float CRUISE_CURRENT_SPIKE = 5.0; // Amps
 
@@ -30,7 +34,7 @@ const float AUTO_CRUISE_TIME = 30.0;    // seconds
 const float CRUISE_CURRENT_LOW = 5.0;   // Amps
 
 // auto stop if remote is off and speed is over 20 km/h
-const float MAX_PUSHING_SPEED = 20.0;   // km/h
+const float C_MAX_PUSHING_SPEED = 20.0;   // this should be in mph if MilesSetup is defined
 
 // Auto stop (in seconds)
 const float AUTO_BRAKE_TIME = 5.0;    // time to apply the full brakes
@@ -46,23 +50,54 @@ const int REMOTE_LOCK_TIMEOUT = 10; // seconds to lock throttle when idle
 const int REMOTE_SLEEP_TIMEOUT = 180; // seconds to go to sleep mode
 
 // turn off display if battery < 15%
-const int DISPLAY_BATTERY_MIN = 0;
+const int DISPLAY_BATTERY_MIN = 0; //15 default. If 0 then make sure you MONITOR your battery
 
-// VESC current, for graphs only
+// VESC current, for graphs only | Take directly from VESC Tool
 const int MOTOR_MIN = -45;
 const int MOTOR_MAX = 45;
 const int BATTERY_MIN = -12;
 const int BATTERY_MAX = 20;
 
 // default board configuration
-const int MAX_SPEED = 30;       // KM/H
-const int MAX_RANGE = 30;       // KM
+const int C_MAX_SPEED = 25;       // Max Speed
+const int C_MAX_RANGE = 10;       // MAX RANGE
 const int BATTERY_CELLS = 10;
+const float BATTERY_VOLTAGE_CUTOFF_START = 36;   // "Battery Voltage Cutoff Start" Should come directly from VESC Tool
+const float BATTERY_VOLTAGE_CUTOFF_END   = 34;     // "Battery Voltage Cutoff End"   Should come directly from VESC Tool
 const int BATTERY_TYPE = 1;     // 0: LI-ION | 1: LIPO
 const int MOTOR_POLES = 14;
 const int WHEEL_DIAMETER = 90;
 const int WHEEL_PULLEY = 36;
 const int MOTOR_PULLEY = 15;
+
+//MPH calculations DON'T CHANGE
+#ifdef MilesSetup
+const float PUSHING_SPEED = (C_PUSHING_SPEED);
+const float MAX_PUSHING_SPEED = (C_MAX_PUSHING_SPEED); 
+const int MAX_SPEED = (C_MAX_SPEED);
+const int MAX_RANGE = (C_MAX_RANGE);
+const char DISTANCE_UNIT[3] = "mi";
+const char ALT_DISTANCE_UNIT[3] = "mi";
+const char SMALL_DISTANCE_UNIT[3] = "ft";
+const char SPEED_UNIT[4] = "mph";
+#endif
+
+//KMH calculations DON'T CHANGE
+#ifndef MilesSetup
+const float PUSHING_SPEED = C_PUSHING_SPEED;
+const float MAX_PUSHING_SPEED = C_MAX_PUSHING_SPEED;
+const int MAX_SPEED = C_MAX_SPEED;
+const int MAX_RANGE = C_MAX_RANGE;
+const char DISTANCE_UNIT[3] = "km";
+const char ALT_DISTANCE_UNIT[2] = "k";
+const char SMALL_DISTANCE_UNIT[3] = "m";
+const char SPEED_UNIT[5] = "km/h";
+#endif
+
+const float minCellVoltage = (BATTERY_VOLTAGE_CUTOFF_END/BATTERY_CELLS);
+
+// MIN_BATTERY_VOLTAGE_START
+// MIN_BATTERY_VOLTAGE_END
 
 #define VERSION 2
 
@@ -154,15 +189,26 @@ struct TelemetryPacket {
   int16_t f2wi(float f) { return f * 100; } // pack float
   float w2fi(int16_t w) { return float(w) / 100; }; // unpack float
 
+  #ifdef MilesSetup
+  float getSpeed() { return (w2f(speed)); }
+  void setSpeed(float f) { speed = (f2w(f)*0.621371); }
+  #endif
+  #ifndef MilesSetup
   float getSpeed() { return w2f(speed); }
   void setSpeed(float f) { speed = f2w(f); }
+  #endif
 
   float getVoltage() { return w2f(voltage); }
   void setVoltage(float f) { voltage = f2w(f); }
 
+  #ifdef MilesSetup
+  float getDistance() { return (w2f(distance)); }
+  void setDistance(float f) { distance = (f2w(f)*0.621371); }
+  #endif
+  #ifndef MilesSetup
   float getDistance() { return w2f(distance); }
   void setDistance(float f) { distance = f2w(f); }
-
+  #endif
   float getMotorCurrent() { return w2fi(motorCurrent); }
   void setMotorCurrent(float f) { motorCurrent = f2wi(f); }
 

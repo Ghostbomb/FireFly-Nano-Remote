@@ -107,7 +107,9 @@ AppState state = CONNECTING;
 AppState receiverState;
 
 // OLED display
+unsigned long lastSignalBlinkFast; //faster blinking for Battery Voltage
 unsigned long lastSignalBlink;
+bool signalBlinkFast = false; //faster blinking for Battery Voltage
 bool signalBlink = false;
 byte counter = 0;
 bool displayOn = false;
@@ -244,6 +246,7 @@ void checkBatteryLevel();
 void coreTask(void * pvParameters );
 int cruiseControl();
 void drawBatteryLevel();
+void drawBatteryPercentVoltage();
 void drawConnectingScreen();
 void drawMode();
 void drawMainPage();

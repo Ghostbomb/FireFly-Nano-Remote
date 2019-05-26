@@ -132,15 +132,7 @@ bool isMoving() {
    Calculate the battery level of the board based on the telemetry voltage
 */
 float batteryPackPercentage( float voltage ) {
-
   float maxCellVoltage = 4.2;
-  float minCellVoltage;
-
-  if (boardConfig.batteryType == 0) { // Li-ion
-    minCellVoltage = 3.1;
-  } else { // Li-po
-    minCellVoltage = 3.4;
-  }
 
   float percentage = (100 - ( (maxCellVoltage - voltage / boardConfig.batteryCells) / ((maxCellVoltage - minCellVoltage)) ) * 100);
 
@@ -165,6 +157,7 @@ bool prepareUpdate() {
   const char* password = WIFI_PASSWORD; // e.g. "12345678";
 
   wifiStatus = "Connecting:";
+  debug("Wifi Connecting");
   updateStatus = String(ssid);
 
   WiFi.mode(WIFI_STA);
@@ -296,17 +289,16 @@ void updateScreen() {
 
         display.setCursor(0, 20);
         display.println("THR: " + String(map(throttle, 0, 255, -100, 100)) + "%");
-        display.println("SPD: " + String(telemetry.getSpeed(),1) + " k");
+        display.println("SPD: " + String(telemetry.getSpeed(),1)/* + " " + SPEED_UNIT*/);
       }
       break;
   }
 
   // ---- status ----
   display.setTextColor(WHITE);
-
-    String s = getState() + "  " +
-      String(telemetry.getVoltage(), 1) + "v  " +
-      String(telemetry.getDistance(), 1) + "km";
+  String s = getState() + "  " +
+    String(telemetry.getVoltage(), 1) + "v  " +
+    String((telemetry.getDistance()), 1) + DISTANCE_UNIT;
 
   #ifdef FAKE_UART
     s = "Board ID: " + String(boardID, HEX);
@@ -964,23 +956,23 @@ void setCruise(uint8_t speed) {
 void calculateRatios() {
   // Gearing ratio
   gearRatio = (float)boardConfig.motorPulley / (float)boardConfig.wheelPulley;
-  // ERPM to Km/h
+  // ERPM to Km/h or mph
   ratioRpmSpeed = (gearRatio * 60 * (float)boardConfig.wheelDiameter * 3.14156) / (((float)boardConfig.motorPoles / 2) * 1E6);
-  // Pulses to km travelled
+  // Pulses to km or mi travelled
   ratioPulseDistance = (gearRatio * (float)boardConfig.wheelDiameter * 3.14156) / (((float)boardConfig.motorPoles * 3) * 1E6);
 }
 
-// rpm to km/h
+// rpm to km/h or mph
 float rpm2speed(long rpm) {
   return abs(ratioRpmSpeed * rpm);
 }
 
-// rpm to km/h
+// rpm to km/h or mph
 long speed2rpm(uint8_t speed) {
   return speed / ratioRpmSpeed;
 }
 
-// tachometerAbs to km
+// tachometerAbs to km or mi
 float tach2dist(long tachometer) {
   return ratioPulseDistance * tachometer;
 }
