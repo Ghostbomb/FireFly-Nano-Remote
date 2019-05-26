@@ -132,15 +132,7 @@ bool isMoving() {
    Calculate the battery level of the board based on the telemetry voltage
 */
 float batteryPackPercentage( float voltage ) {
-
   float maxCellVoltage = 4.2;
-  float minCellVoltage;
-
-  if (boardConfig.batteryType == 0) { // Li-ion
-    minCellVoltage = 3.1;
-  } else { // Li-po
-    minCellVoltage = 3.4;
-  }
 
   float percentage = (100 - ( (maxCellVoltage - voltage / boardConfig.batteryCells) / ((maxCellVoltage - minCellVoltage)) ) * 100);
 

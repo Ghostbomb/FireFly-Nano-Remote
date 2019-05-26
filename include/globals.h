@@ -50,18 +50,20 @@ const int REMOTE_LOCK_TIMEOUT = 10; // seconds to lock throttle when idle
 const int REMOTE_SLEEP_TIMEOUT = 180; // seconds to go to sleep mode
 
 // turn off display if battery < 15%
-const int DISPLAY_BATTERY_MIN = 0; //15 default
+const int DISPLAY_BATTERY_MIN = 0; //15 default. If 0 then make sure you MONITOR your battery
 
-// VESC current, for graphs only
+// VESC current, for graphs only | Take directly from VESC Tool
 const int MOTOR_MIN = -45;
 const int MOTOR_MAX = 45;
 const int BATTERY_MIN = -12;
 const int BATTERY_MAX = 20;
 
 // default board configuration
-const int C_MAX_SPEED = 30;       // Max Speed
-const int C_MAX_RANGE = 30;       // MAX RANGE
+const int C_MAX_SPEED = 25;       // Max Speed
+const int C_MAX_RANGE = 10;       // MAX RANGE
 const int BATTERY_CELLS = 10;
+const float BATTERY_VOLTAGE_CUTOFF_START = 36;   // "Battery Voltage Cutoff Start" Should come directly from VESC Tool
+const float BATTERY_VOLTAGE_CUTOFF_END   = 34;     // "Battery Voltage Cutoff End"   Should come directly from VESC Tool
 const int BATTERY_TYPE = 1;     // 0: LI-ION | 1: LIPO
 const int MOTOR_POLES = 14;
 const int WHEEL_DIAMETER = 90;
@@ -84,6 +86,10 @@ const int MAX_SPEED = C_MAX_SPEED;
 const int MAX_RANGE = C_MAX_RANGE;
 #endif
 
+const float minCellVoltage = (BATTERY_VOLTAGE_CUTOFF_END/BATTERY_CELLS);
+
+// MIN_BATTERY_VOLTAGE_START
+// MIN_BATTERY_VOLTAGE_END
 
 #define VERSION 2
 

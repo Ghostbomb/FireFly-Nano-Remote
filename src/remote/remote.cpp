@@ -1017,13 +1017,6 @@ float getBatteryLevel() {
 float batteryPackPercentage( float voltage ) {
 
   float maxCellVoltage = 4.2;
-  float minCellVoltage;
-
-  if (boardConfig.batteryType == 0) { // Li-ion
-    minCellVoltage = 3.1;
-  } else { // Li-po
-    minCellVoltage = 3.4;
-  }
 
   float percentage = (100 - ( (maxCellVoltage - voltage / boardConfig.batteryCells) / ((maxCellVoltage - minCellVoltage)) ) * 100);
 
@@ -1588,16 +1581,16 @@ void drawMainPage() {
 
     drawString(m, -1, 50, fontDesc);
   }
+  drawBatteryPercentVoltage();
+  // // --- Battery ---
+  // value = batteryPackPercentage( telemetry.getVoltage() );
 
-  // --- Battery ---
-  value = batteryPackPercentage( telemetry.getVoltage() );
+  // y = 74;
 
-  y = 74;
+  // int battery = (int) value;
+  // drawStringCenter(String(battery), "%", y);
 
-  int battery = (int) value;
-  drawStringCenter(String(battery), "%", y);
-
-  drawString(String(telemetry.getVoltage(), 1), 44, 73, fontPico);
+  // drawString(String(telemetry.getVoltage(), 1), 44, 73, fontPico);
 
   y = 80;
   x = 1;
@@ -1696,6 +1689,35 @@ void drawMainPage() {
   drawBox(x, y + 2, value / range * 62, 4);
 }
 
+void drawBatteryPercentVoltage() {
+
+  float value;
+  int x = 0;
+  int y = 74;
+
+  value = batteryPackPercentage( telemetry.getVoltage() );
+  // batteryVolt = telemetry.getVoltage();
+
+  if(telemetry.getVoltage() <= BATTERY_VOLTAGE_CUTOFF_START){ //if actual voltage is less than battery voltage cutoff
+    if (millisSince(lastSignalBlinkFast) > 250) {
+        signalBlinkFast = !signalBlinkFast;
+        lastSignalBlinkFast = millis();
+      }
+  } else signalBlinkFast = false;
+
+  if (signalBlinkFast) return; //blink
+  // --- Battery ---
+  
+
+  // y = 74;
+
+  int battery = (int) value;
+  drawStringCenter(String(battery), "%", y);
+
+  drawString(String(telemetry.getVoltage(), 1), 44, 73, fontPico);
+
+}
+
 void drawStringCenter(String value, String caption, uint8_t y) {
 
   // draw digits
@@ -1738,14 +1760,14 @@ void drawSignal() {
 /*
    Print the remotes battery level as a battery on the OLED
 */
-void drawBatteryLevel() {
+void drawBatteryLevel() { //for remote battery level
 
   int x = 2;
   int y = 2;
 
   // blinking
   if (batteryLevel < 20) {
-    if (millisSince(lastSignalBlink) > 500) {
+    if (millisSince(lastSignalBlink) > 750) {
         signalBlink = !signalBlink;
         lastSignalBlink = millis();
       }
