@@ -5,3 +5,6 @@ Control your electric skateboard with an Arduino controlled remote. This reposit
 I have made a Wiki here on Github, with a few tips and guides on how to build the remote. The Wiki can be found here: https://github.com/DroidSector/FireFly-Nano-Remote/wiki
 
 **Important**: This remote is still in development, and is far from perfect. Stay safe, and remember to wear protective gear!
+
+Setup:
+Change frequency in radio.h
