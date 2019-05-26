@@ -5,4 +5,4 @@
 .gcc-flags.json
 .vscode
 nano.code-workspace
-globals.h
+# Wifi Credentials.h

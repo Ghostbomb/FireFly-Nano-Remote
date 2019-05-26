@@ -1,4 +1,5 @@
 #include "receiver.h"
+#include "Wifi Credentials.h"
 // #include "heltec-2.h" //only for testing purposes. COMMENT WHEN COMPILING CODE
 
 #ifdef ARDUINO_SAMD_FEATHER_M0 // Feather M0 w/Radio
@@ -41,8 +42,6 @@ unsigned long statusCycleTime, previousStatusMillis, currentMillis, startCycleMi
 
 unsigned long lastDelay;
 
-#define WIFI_NETWORK  "FireFly Remote"
-#define WIFI_PASSWORD  "eVF8bV7C%FTyE4q#e%g8Zl"
 
 // Initiate VescUart class for UART communication
 
@@ -153,7 +152,6 @@ float batteryPackPercentage( float voltage ) {
 
   return percentage;
 }
-
 #ifdef RECEIVER_SCREEN
 bool prepareUpdate() {
 
@@ -306,9 +304,9 @@ void updateScreen() {
   // ---- status ----
   display.setTextColor(WHITE);
 
-  String s = getState() + "  " +
-    String(telemetry.getVoltage(), 1) + "v  " +
-    String(telemetry.getDistance(), 1) + "km";
+    String s = getState() + "  " +
+      String(telemetry.getVoltage(), 1) + "v  " +
+      String(telemetry.getDistance(), 1) + "km";
 
   #ifdef FAKE_UART
     s = "Board ID: " + String(boardID, HEX);
