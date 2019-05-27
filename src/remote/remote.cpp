@@ -197,8 +197,6 @@ void checkBatteryLevel() {
   // debug_E("checkBatteryLevel");
   batteryLevel = getBatteryLevel();
   
-  debug("Battery Level: " + String(batteryLevel));
-
   if (batteryLevel >= DISPLAY_BATTERY_MIN) {
     if (!displayOn) {
       displayOn = true;
@@ -224,10 +222,7 @@ void calculateThrottle() {
 
   int position = readThrottlePosition();
 
-  debug("State "+String(state));
-
   switch (state) {
-
   case PAIRING:
   case CONNECTING:
     throttle = position; // show debug info
@@ -499,7 +494,7 @@ void sleep2()
 */
 
 bool pressed(int button) {
-  return digitalRead(button) == LOW;
+  return digitalRead(button) == HIGH;
 }
 
 void waitRelease(int button) {
@@ -1290,6 +1285,8 @@ void drawSettingsMenu() {
   // wheel = up/down
   int position = readThrottlePosition();
 
+  debug("throttle position: " + String(position));
+
   // todo: wheel control
   if (position < default_throttle - 30) {
     if (currentMenu < subMenus-1) currentMenu += 0.25;
@@ -1297,6 +1294,8 @@ void drawSettingsMenu() {
   if (position > default_throttle + 30) {
     if (currentMenu > 0) currentMenu -= 0.25;
   }
+
+  debug("current menu: " + String(currentMenu));
 
   switch (menuPage) {
 
