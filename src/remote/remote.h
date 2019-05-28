@@ -286,5 +286,3 @@ bool triggerActive();
 bool triggerActiveSafe();
 void updateMainDisplay();
 void vibrate(int ms);
-
-void drawboxtest();

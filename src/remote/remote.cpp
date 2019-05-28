@@ -162,16 +162,10 @@ void loop() { // core 1
   #ifdef ARDUINO_SAMD_ZERO
     radioLoop();
   #endif
-  // drawboxtest();
 
   checkBatteryLevel();
   handleButtons();
   
-  // drawPairingScreen();
-  // debug_E("draw pairing screasd");
-  // drawThrottle();
-  // debug_E("sent trhottle draw commamnd");
-
   // Call function to update display
   if (displayOn) updateMainDisplay();
 }
@@ -197,7 +191,7 @@ void checkBatteryLevel() {
   // debug_E("checkBatteryLevel");
   batteryLevel = getBatteryLevel();
   
-  debug("Battery Level: " + String(batteryLevel));
+  // debug("Battery Level: " + String(batteryLevel));
 
   if (batteryLevel >= DISPLAY_BATTERY_MIN) {
     if (!displayOn) {
@@ -224,14 +218,14 @@ void calculateThrottle() {
 
   int position = readThrottlePosition();
 
-  debug("State "+String(state));
+  // debug("State "+String(state));
 
   switch (state) {
 
   case PAIRING:
   case CONNECTING:
     throttle = position; // show debug info
-    debug("CONNECTING Throttle Position" + String(position));
+    // debug("CONNECTING Throttle Position" + String(position));
     break;
 
   case IDLE: //
@@ -277,9 +271,10 @@ void calculateThrottle() {
   case MENU: // navigate menu
     // idle
     throttle = default_throttle;
-    debug("Navitage Menu");
+    // debug("Navitage Menu");
     if (position != default_throttle) {
       menuWasUsed = true;
+      debug("menuWasUsed");
     }
     break;
 
@@ -347,6 +342,7 @@ void handleButtons() {
 
         // switch pages
         page = static_cast<ui_page>((page + 1) % PAGE_MAX);
+        debug("change page");
     }
 
     break;
@@ -807,7 +803,7 @@ void prepatePacket() {
     if (needConfig) {
       // Ask for board configuration
       remPacket.command = GET_CONFIG;
-      debug("send GET_CONFIG");
+      // debug("send GET_CONFIG");
       break;
     } // else falltrough
 
