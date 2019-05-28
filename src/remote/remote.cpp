@@ -855,7 +855,7 @@ void transmitToReceiver() {
       switch (state) {
         case CONNECTING:
           state = IDLE; // now connected
-          if (secondsSince(startupTime) > 2) vibrate(100);
+          if (secondsSince(startupTime) > 2) vibrate(200);
           break;
       }
       failCount = 0;
@@ -878,7 +878,7 @@ void transmitToReceiver() {
       default: // connected
         debug("Disconnected");
         state = CONNECTING;
-        vibrate(100);
+        vibrate(200);
     }
   }
 
