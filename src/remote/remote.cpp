@@ -1566,9 +1566,9 @@ void drawMainPage() {
 
     drawString(m, -1, 50, fontDesc);
   }
-  drawBatteryPercentVoltage();
-  // // --- Battery ---
   value = batteryPackPercentage( telemetry.getVoltage() );
+  drawBatteryPercentVoltage(value);
+  // // --- Battery ---
 
   // y = 74;
 
@@ -1670,13 +1670,12 @@ void drawMainPage() {
   drawBox(x, y + 2, value / range * 62, 4);
 }
 
-void drawBatteryPercentVoltage() {
+void drawBatteryPercentVoltage(float value) {
 
-  float value;
+  // float value;
   int x = 0;
   int y = 74;
 
-  value = batteryPackPercentage( telemetry.getVoltage() );
   // batteryVolt = telemetry.getVoltage();
 
   if(telemetry.getVoltage() <= BATTERY_VOLTAGE_CUTOFF_START){ //if actual voltage is less than battery voltage cutoff
@@ -1687,10 +1686,6 @@ void drawBatteryPercentVoltage() {
   } else signalBlinkFast = false;
 
   if (signalBlinkFast) return; //blink
-  // --- Battery ---
-  
-
-  // y = 74;
 
   int battery = (int) value;
   drawStringCenter(String(battery), "%", y);
