@@ -162,16 +162,10 @@ void loop() { // core 1
   #ifdef ARDUINO_SAMD_ZERO
     radioLoop();
   #endif
-  // drawboxtest();
 
   checkBatteryLevel();
   handleButtons();
   
-  // drawPairingScreen();
-  // debug_E("draw pairing screasd");
-  // drawThrottle();
-  // debug_E("sent trhottle draw commamnd");
-
   // Call function to update display
   if (displayOn) updateMainDisplay();
 }
@@ -226,7 +220,7 @@ void calculateThrottle() {
   case PAIRING:
   case CONNECTING:
     throttle = position; // show debug info
-    debug("CONNECTING Throttle Position" + String(position));
+    // debug("CONNECTING Throttle Position" + String(position));
     break;
 
   case IDLE: //
@@ -272,9 +266,10 @@ void calculateThrottle() {
   case MENU: // navigate menu
     // idle
     throttle = default_throttle;
-    debug("Navitage Menu");
+    // debug("Navitage Menu");
     if (position != default_throttle) {
       menuWasUsed = true;
+      debug("menuWasUsed");
     }
     break;
 
@@ -342,6 +337,7 @@ void handleButtons() {
 
         // switch pages
         page = static_cast<ui_page>((page + 1) % PAGE_MAX);
+        debug("change page");
     }
 
     break;
@@ -494,7 +490,7 @@ void sleep2()
 */
 
 bool pressed(int button) {
-  return digitalRead(button) == HIGH;
+  return digitalRead(button) == InvertTrigger;
 }
 
 void waitRelease(int button) {
@@ -575,7 +571,7 @@ bool inRange(short val, short minimum, short maximum) {
    Return true if trigger is activated, false otherwice
 */
 bool triggerActive() {
-  bool active = digitalRead(PIN_TRIGGER) == HIGH; //Probably change this if inverted. LOW 0, HIGH 1
+  bool active = digitalRead(PIN_TRIGGER) == InvertTrigger; //Probably change this if inverted. LOW 0, HIGH 1
   // debug("Trigger active: " + String(active) + " PIN_TRIGGER: " + String(PIN_TRIGGER)+" active "+ String(active));
   if (active) keepAlive();
   return active;
@@ -802,7 +798,7 @@ void prepatePacket() {
     if (needConfig) {
       // Ask for board configuration
       remPacket.command = GET_CONFIG;
-      debug("send GET_CONFIG");
+      // debug("send GET_CONFIG");
       break;
     } // else falltrough
 
@@ -1572,7 +1568,7 @@ void drawMainPage() {
   }
   drawBatteryPercentVoltage();
   // // --- Battery ---
-  // value = batteryPackPercentage( telemetry.getVoltage() );
+  value = batteryPackPercentage( telemetry.getVoltage() );
 
   // y = 74;
 

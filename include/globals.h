@@ -22,6 +22,7 @@ const COMM_PACKET_ID VESC_COMMAND = COMM_GET_VALUES; // VESC
 */
 
 #define MilesSetup     //UNCOMMENT for Miles per hour. Then change number below to miles per hour if uncommented(defined)
+#define InvertTrigger HIGH   //(LOW or HIGH) Change to LOW or HIGH if trigger is soldered wrong or menu/cruise control is acting strange
 
 //Auto Cruise
 const bool  AUTO_CRUISE_ON = true;     // disabled by default
