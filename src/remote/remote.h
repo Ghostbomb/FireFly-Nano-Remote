@@ -152,8 +152,9 @@ const byte mainMenus = 3;
 
 String MENUS[mainMenus][subMenus] = {
     { "Info", "Debug", "", "", "", "", "" },
-    { "Remote", "Calibrate", "Pair", "Auto off", "", "", "" },
-    { "Board", "Update",  "Max Speed", "Range", "Cells", "Battery", "Motor" }
+    { "Remote", "Calibrate", "Pair", "", /*"Auto off"*/ "", "", "" },
+    { "Board", "Update", "", "", "", "", "" //, "Max Speed", "Range", "Cells", "Battery", "Motor" 
+    }
   };
 
 enum menu_main { MENU_INFO, MENU_REMOTE, MENU_BOARD };
