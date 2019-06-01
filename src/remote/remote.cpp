@@ -1629,8 +1629,8 @@ void drawMainPage() {
 
   #ifdef MilesSetup
   String km;
-  if (value >= 1) {
-    km = String(value, 0); //unit: miles
+  if (value >= 0.5) {
+    km = String(value, 1); //unit: miles
     drawStringCenter(km, DISTANCE_UNIT, y);
   } else {
     km = String(value * 5280, 0); //converts to feet
