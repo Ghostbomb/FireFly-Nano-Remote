@@ -247,7 +247,7 @@ void checkBatteryLevel();
 void coreTask(void * pvParameters );
 int cruiseControl();
 void drawBatteryLevel();
-void drawBatteryPercentVoltage();
+void drawBatteryPercentVoltage(float value);
 void drawConnectingScreen();
 void drawMode();
 void drawMainPage();
