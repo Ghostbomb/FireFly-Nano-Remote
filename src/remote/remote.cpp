@@ -398,7 +398,7 @@ void sleep()
     // turn off radio
     LoRa.end();
     LoRa.sleep();
-    delay(100);
+    delay(2000);
 
     // setup the peripherals state in deep sleep
     pinMode(SCL_OLED, INPUT);
