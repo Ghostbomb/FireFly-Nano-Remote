@@ -872,8 +872,7 @@ void transmitToReceiver() {
       case PAIRING: break; // keep pairing mode
       case CONNECTING: break;
       default: // connected
-        debug("Disconnected");
-        state = CONNECTING;
+        // state = CONNECTING;
         vibrate(200);
     }
   }
