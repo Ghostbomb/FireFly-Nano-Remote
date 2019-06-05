@@ -8,3 +8,4 @@ I have made a Wiki here on Github, with a few tips and guides on how to build th
 
 Setup:
 Change frequency in radio.h
+* TODO: detailed setup guide
