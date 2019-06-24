@@ -32,7 +32,7 @@ const float C_PUSHING_SPEED = 12.0;       // Pushing Speed to initiate the Auto 
 const float PUSHING_TIME = 3.0;         // seconds
 const float CRUISE_CURRENT_SPIKE = 5.0; // Amps
 
-// boad will stop after 30s if current is low
+// board will stop after 30s if current is low
 const float AUTO_CRUISE_TIME = 30.0;    // seconds
 const float CRUISE_CURRENT_LOW = 5.0;   // Amps
 
