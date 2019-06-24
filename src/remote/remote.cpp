@@ -1387,11 +1387,27 @@ void drawSettingsMenu() {
 void drawDebugPage() {
 
   //  display.drawFrame(0,0,64,128);
-
+  char fw_version_buffer[6]; //local variable
+  char revision_id[48]= REVISION_ID;
+  char fw_version[12] = FW_VERSION;
+  
   int y = 10;
   drawString(String(settings.boardID, HEX), -1, y, fontDesc);
 
-  y = 35;
+  y = 23;
+  if (fw_version[0] == 'v' ) {
+    drawString(String(FW_VERSION), -1 , y, fontDesc);
+  } 
+  else {
+    String r = String("r");
+    String upper_rev_id = String(revision_id).substring(5, 9);
+    upper_rev_id.toUpperCase();
+    r.concat(upper_rev_id);
+    r.toCharArray(fw_version_buffer, sizeof(fw_version_buffer));
+    drawString(String(fw_version_buffer), -1 , y, fontDesc);
+  }
+  
+  y = 45;
   drawStringCenter(String(lastDelay), " ms", y);
 
   y += 25;
@@ -1399,6 +1415,7 @@ void drawDebugPage() {
 
   y += 25;
   drawStringCenter(String(readThrottlePosition()), String(hallValue), y);
+}
 
 }
 
