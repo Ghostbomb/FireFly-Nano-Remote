@@ -49,7 +49,7 @@ struct RemoteSettings {
   short centerHallValue = CENTER_HALL;
   short maxHallValue = MAX_HALL;
   uint32_t boardID = 0;
-  uint8_t drivingMode = 0;
+  uint8_t drivingMode = 1;
 } settings;
 
 RemoteSettings tempSettings;
