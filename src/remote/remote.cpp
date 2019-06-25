@@ -1470,7 +1470,12 @@ void drawModePage(int mode){
     waitRelease(PIN_TRIGGER);
   }
 }
-}
+// void drawOdometerPage() {
+//   int value;
+//   value=1;
+//   drawStringCenterFont("300", "Total Distance Travelled", 20, fontDigital, fontDesc);
+//   // drawStringCenter("BIGFAT NUMBER")  
+//}
 
 int getStringWidth(String s) {
 
