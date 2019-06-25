@@ -9,6 +9,8 @@
 // #define DEBUG // Uncomment DEBUG if you need to debug the remote
 // #define DEBUG_OP //extra Debugging, basiccely showing everything its doing
 
+#define REVISION_ID "$Id$"
+#define FW_VERSION "development"
 // #define RECEIVER_SCREEN
 const COMM_PACKET_ID VESC_COMMAND = COMM_GET_VALUES; // VESC
 // const COMM_PACKET_ID VESC_COMMAND = COMM_GET_UNITY_VALUES; // Enertion Unity
@@ -25,12 +27,12 @@ const COMM_PACKET_ID VESC_COMMAND = COMM_GET_VALUES; // VESC
 #define InvertTrigger HIGH   //(LOW or HIGH) Change to LOW or HIGH if trigger is soldered wrong or menu/cruise control is acting strange
 
 //Auto Cruise
-const bool  AUTO_CRUISE_ON = true;     // disabled by default
+const bool  AUTO_CRUISE_ON = false;     // disabled by default
 const float C_PUSHING_SPEED = 12.0;       // Pushing Speed to initiate the Auto Cruise
 const float PUSHING_TIME = 3.0;         // seconds
 const float CRUISE_CURRENT_SPIKE = 5.0; // Amps
 
-// boad will stop after 30s if current is low
+// board will stop after 30s if current is low
 const float AUTO_CRUISE_TIME = 30.0;    // seconds
 const float CRUISE_CURRENT_LOW = 5.0;   // Amps
 
