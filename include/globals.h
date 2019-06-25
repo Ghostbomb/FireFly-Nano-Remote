@@ -11,9 +11,14 @@
 
 #define REVISION_ID "$Id$"
 #define FW_VERSION "development"
+
 // #define RECEIVER_SCREEN
 const COMM_PACKET_ID VESC_COMMAND = COMM_GET_VALUES; // VESC
 // const COMM_PACKET_ID VESC_COMMAND = COMM_GET_UNITY_VALUES; // Enertion Unity
+
+#define MilesSetup     //UNCOMMENT for Miles per hour. Then change number below to miles per hour if uncommented(defined)
+#define InvertTrigger HIGH   //(LOW or HIGH) Change to LOW or HIGH if trigger is soldered wrong or menu/cruise control is acting strange
+#define VOLTAGE_DIVIDER 
 
 /*
   Endless ride - when remote is off and speed is over 12 km/h for 3 seconds,
@@ -52,8 +57,10 @@ const int REMOTE_RX_TIMEOUT = 20; // ms
 const int REMOTE_LOCK_TIMEOUT = 10; // seconds to lock throttle when idle
 const int REMOTE_SLEEP_TIMEOUT = 180; // seconds to go to sleep mode
 
+const float VOLTAGE_MULTIPLIER = 0.001388;
+
 // turn off display if battery < 15%
-const int DISPLAY_BATTERY_MIN = 0; //15 default. If 0 then make sure you MONITOR your battery
+const int DISPLAY_BATTERY_MIN = 15; //15 default. If 0 then make sure you MONITOR your battery
 
 // VESC current, for graphs only | Take directly from VESC Tool
 const int MOTOR_MIN = -45;

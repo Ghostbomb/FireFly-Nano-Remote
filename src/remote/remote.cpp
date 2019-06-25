@@ -978,7 +978,12 @@ float batteryLevelVolts() {
 
     #ifdef ARDUINO_SAMD_ZERO
       voltage = ( (float)total / (float)samples ) * 2 * refVoltage / 1024.0;
-    #elif ESP32
+    #elif defined(VOLTAGE_DIVIDER)
+      float reading = analogRead(PIN_BATTERY);
+      debug("Voltage Reading Raw: "+ String(reading));
+      voltage = reading * VOLTAGE_MULTIPLIER;
+      debug("Voltage: "+ String(voltage));
+    #elif defined(ESP32)
       double reading = (double)total / (double)samples;
       voltage = -0.000000000000016 * pow(reading,4) + 0.000000000118171 * pow(reading,3)- 0.000000301211691 * pow(reading,2)+ 0.001109019271794 * reading + 0.034143524634089;
       voltage = voltage * 2.64;
@@ -1447,6 +1452,8 @@ void drawDebugPage() {
 
   y += 25;
   drawStringCenter(String(readThrottlePosition()), String(hallValue), y);
+  y+= 25;
+  drawStringCenter(String(batteryLevelVolts())," V", y);
 }
 
 void drawModePage(int mode){
