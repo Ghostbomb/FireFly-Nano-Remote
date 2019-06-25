@@ -160,6 +160,7 @@ String MENUS[mainMenus][subMenus] = {
   };
 
 enum menu_main { MENU_INFO, MENU_REMOTE, MENU_BOARD, MENU_MODE };
+enum menu_info { INFO_DEBUG, INFO_TELEMETRY, INFO_ODOMETER };
 enum menu_remote { REMOTE_CALIBRATE, REMOTE_PAIR, REMOTE_SLEEP_TIMER };
 enum menu_board { BOARD_UPDATE };
 enum menu_mode { MODE_SLOW, MODE_INTERMEDIATE, MODE_PRO};
