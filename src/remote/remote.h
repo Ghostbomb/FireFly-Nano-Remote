@@ -49,6 +49,7 @@ struct RemoteSettings {
   short centerHallValue = CENTER_HALL;
   short maxHallValue = MAX_HALL;
   uint32_t boardID = 0;
+  uint8_t drivingMode = 0;
 } settings;
 
 RemoteSettings tempSettings;
@@ -148,19 +149,20 @@ enum menu_page {
 
 
 const byte subMenus = 7;
-const byte mainMenus = 3;
+const byte mainMenus = 4;
 
 String MENUS[mainMenus][subMenus] = {
     { "Info", "Debug", "", "", "", "", "" },
     { "Remote", "Calibrate", "Pair", "", /*"Auto off"*/ "", "", "" },
     { "Board", "Update", "", "", "", "", "" //, "Max Speed", "Range", "Cells", "Battery", "Motor" 
-    }
+    },
+    { "Mode", "Slow", "Fast", "Pro", "", "", ""}
   };
 
-enum menu_main { MENU_INFO, MENU_REMOTE, MENU_BOARD };
-enum menu_info { INFO_DEBUG };
+enum menu_main { MENU_INFO, MENU_REMOTE, MENU_BOARD, MENU_MODE };
 enum menu_remote { REMOTE_CALIBRATE, REMOTE_PAIR, REMOTE_SLEEP_TIMER };
 enum menu_board { BOARD_UPDATE };
+enum menu_mode { MODE_SLOW, MODE_INTERMEDIATE, MODE_PRO};
 
 
 float currentMenu = 0;
@@ -260,6 +262,7 @@ void drawSignal();
 void drawStringCenter(String value, String caption, uint8_t y);
 void drawString(String string, int x, int y, const GFXfont *font);
 void drawThrottle();
+void drawModePage(int mode);
 int getStringWidth(String s);
 void handleButtons();
 void initTransmitter();

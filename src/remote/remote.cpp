@@ -214,7 +214,22 @@ void keepAlive() {
 
 void calculateThrottle() {
 
-  int position = readThrottlePosition();
+  int position;
+  int position_adjust = readThrottlePosition(); //0-1023 
+  // int position = readThrottlePosition();
+
+  if(tempSettings.drivingMode == 0) { // slow mode
+    if(position_adjust >= 174.5) { position=174.5; } else { position = position_adjust; }
+    debug(String("drivingmode: ")+ String(tempSettings.drivingMode));
+    }
+  if(tempSettings.drivingMode == 1) { // Intermediate mode
+    if(position_adjust >= 212) { position=212; } else { position = position_adjust; }
+    debug(String("drivingmode: ")+ String(tempSettings.drivingMode));
+    }
+  if(tempSettings.drivingMode == 2) { // pro mode
+    position = position_adjust;
+    debug(String("drivingmode: ")+ String(tempSettings.drivingMode));
+    }
 
   switch (state) {
   case PAIRING:
@@ -1340,7 +1355,7 @@ void drawSettingsMenu() {
               backToMainMenu(); // exit menu
               break;
           }
-          break;
+          break; //break MENU_REMOTE
         case MENU_BOARD:
           switch (subMenuItem) {
             case BOARD_UPDATE:
@@ -1348,10 +1363,22 @@ void drawSettingsMenu() {
               backToMainMenu();
               break;
           }
+          break; //MENU_BOARD
+        case MENU_MODE:
+          switch (subMenuItem){
+            case MODE_SLOW:
+              tempSettings.drivingMode = 0;
           break;
+            case MODE_INTERMEDIATE:
+              tempSettings.drivingMode = 1;
+            break;
+            case MODE_PRO:
+              tempSettings.drivingMode = 2;
+            break;}
+        break;
       }
     }
-    break;
+    break;//switch subMenu
 
   case MENU_ITEM:
 
@@ -1376,10 +1403,15 @@ void drawSettingsMenu() {
 
       break;
 
+    case MENU_MODE:
+      switch (subMenuItem){
+        case MODE_SLOW: drawModePage(0); break;
+        case MODE_INTERMEDIATE: drawModePage(1); break;
+        case MODE_PRO: drawModePage(2); break;
     }
-
     break;
-
+    }
+    break; //break MENU_ITEM
   }
 
 }
@@ -1417,6 +1449,27 @@ void drawDebugPage() {
   drawStringCenter(String(readThrottlePosition()), String(hallValue), y);
 }
 
+void drawModePage(int mode){
+  String dM;
+  switch (mode) {
+      case 0: dM = "Slow"; break;
+      case 1: dM = "Fast"; break;
+      case 2: dM = "Pro"; break;
+      default: dM = "?";
+    }
+  int y = 55;
+  int x = -1;
+  int space = 12;
+  drawString("Setting", x, y, fontDesc);
+  y+=space;
+  drawString("Mode to", x, y, fontDesc);
+  y+=space;
+  drawString(String(dM), x, y, fontDesc);
+  if (pressed(PIN_TRIGGER)){
+    backToMainMenu();
+    waitRelease(PIN_TRIGGER);
+  }
+}
 }
 
 int getStringWidth(String s) {
@@ -1505,6 +1558,7 @@ void drawExtPage() {
   int y = 48;
   float value;
   int bars;
+  String dM;
 
   drawHLine(2, y, 64-2);
 
@@ -1525,8 +1579,15 @@ void drawExtPage() {
 
   // FET & motor temperature
   drawString(String(telemetry.tempFET) + " C    "
-    + String(telemetry.tempMotor) + " C", -1, 114, fontPico);
+    + String(telemetry.tempMotor) + " C", -1, 110, fontPico);
 
+  switch (tempSettings.drivingMode) {
+      case 0: dM = "Slow"; break;
+      case 1: dM = "Fast"; break;
+      case 2: dM = "Pro"; break;
+      default: dM = "?";
+    }
+  drawString("Mode: "+ String(dM), -1, 123, fontDesc);
 }
 
 /*
