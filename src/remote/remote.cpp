@@ -875,7 +875,7 @@ void transmitToReceiver() {
       failCount++;
     }
 
-  } else { // Transmission was not a succes
+  } else { // Transmission was not a success
 
     failCount++;
     debug("Failed transmission");
