@@ -210,6 +210,7 @@ void checkBatteryLevel() {
 
 void keepAlive() {
   lastInteraction = millis();
+  // debug("lastInteraction " + String(lastInteraction));
 }
 
 void calculateThrottle() {
@@ -220,15 +221,15 @@ void calculateThrottle() {
 
   if(tempSettings.drivingMode == 0) { // slow mode
     if(position_adjust >= 174.5) { position=174.5; } else { position = position_adjust; }
-    debug(String("drivingmode: ")+ String(tempSettings.drivingMode));
+    // debug(String("drivingmode: ")+ String(tempSettings.drivingMode));
     }
   if(tempSettings.drivingMode == 1) { // Intermediate mode
     if(position_adjust >= 212) { position=212; } else { position = position_adjust; }
-    debug(String("drivingmode: ")+ String(tempSettings.drivingMode));
+    // debug(String("drivingmode: ")+ String(tempSettings.drivingMode));
     }
   if(tempSettings.drivingMode == 2) { // pro mode
     position = position_adjust;
-    debug(String("drivingmode: ")+ String(tempSettings.drivingMode));
+    // debug(String("drivingmode: ")+ String(tempSettings.drivingMode));
     }
 
   switch (state) {
@@ -245,23 +246,25 @@ void calculateThrottle() {
       if (triggerActive()) {
         // dead man switch activated
         state = NORMAL;
+        // debug("state normal");
         throttle = position;
         stopTime = millis();
         debug("dead man switch activated");
       } else {
         // locked, ignore
         throttle = default_throttle;
+        // debug("state locked 3");
       }
     }
     // sleep timer
     if (stopped && secondsSince(lastInteraction) > REMOTE_SLEEP_TIMEOUT) sleep();
-    break;
+    break; //end of IDLE case
 
   case NORMAL: //state 1
     throttle = position;
 
     // activate cruise mode?. Press trigger while moving to activate cruise control.
-    if (triggerActive() && throttle == default_throttle && speed() > 3) {
+    if (triggerActive() && throttle == default_throttle && speed() >= 0) { //change back to >3
       cruiseSpeed = speed();
       debug("activate cruise mode?");
       // cruiseThrottle = throttle;
@@ -284,7 +287,7 @@ void calculateThrottle() {
     // debug("Navitage Menu");
     if (position != default_throttle) {
       menuWasUsed = true;
-      debug("menuWasUsed");
+      debug("menuWasUsed case menu");
     }
     break;
 
@@ -295,7 +298,7 @@ void calculateThrottle() {
     if (!triggerActive() || position != default_throttle) {
       state = NORMAL;
       throttle = position;
-      debug("trigger released");
+      debug("trigger released cruise mode off");
     }
     break;
   }
@@ -304,6 +307,8 @@ void calculateThrottle() {
 
   // wheel was used
   if (position != default_throttle) keepAlive();
+  // debug("position_adjust " + String(readThrottlePosition()));
+  // debug("position " + String(position));
 }
 
 // int cruiseControl() {
@@ -355,7 +360,7 @@ void handleButtons() {
         debug("change page");
     }
 
-    break;
+    break; //end of default
 
   case HOLD: // start shutdown
     break;
@@ -399,7 +404,7 @@ void sleep()
   #elif ESP32
 
     // wait for button release
-    while (pressed(PIN_BUTTON)) vTaskDelay(10); //power off
+    while (pressed(PIN_BUTTON)) vTaskDelay(10); //delay(500);     //power off //todo list : maybe change vTaskDelay(10 > to like 200) so it waits longer
 
     // keep RTC on
     esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_PERIPH, ESP_PD_OPTION_ON);
@@ -564,6 +569,7 @@ void saveSettings() {
     preferences.putShort("CENTER_HALL", settings.centerHallValue);
     preferences.putShort("MAX_HALL", settings.maxHallValue);
     preferences.putLong("BOARD_ID", settings.boardID);
+    // preferences.putLong("BOARD_ID", 0);
     preferences.end();
 
   #elif ARDUINO_SAMD_ZERO
@@ -601,6 +607,8 @@ void onTelemetryChanged() {
       if (telemetry.getSpeed() != 0 || throttle != default_throttle)  {
         // moving
         stopped = false;
+        // SuccessfulConnection = true;
+        // debug("SuccessfulConnecion set to true");
       } else {
         if (!stopped) { // just stopped
           stopTime = millis();
@@ -677,6 +685,7 @@ bool receiveData() {
 
   uint8_t len =  PACKET_SIZE + CRC_SIZE;
   uint8_t buf[len];
+  // debug(String("buf = [len] ")+String(len));
 
   // receive a packet and check crc
   if (!receivePacket(buf, len)) return false;
@@ -714,7 +723,7 @@ bool receiveData() {
       memcpy(&boardConfig, buf, PACKET_SIZE);
 
       // check chain and CRC
-      debug("ConfigPacket: max speed " + String(boardConfig.maxSpeed));
+      // debug("ConfigPacket: max speed " + String(boardConfig.maxSpeed));
 
       needConfig = false;
       return true;
@@ -854,6 +863,7 @@ void transmitToReceiver() {
   // send packet
   digitalWrite(LED, HIGH);
   prepatePacket();
+  // int i;
 
   if (sendData()) {
     // Listen for an acknowledgement reponse and return of uart data
@@ -873,22 +883,60 @@ void transmitToReceiver() {
     } else {
       // debug("No reply");
       failCount++;
+      // debug(String("Failed receiveData = ")+ String(failCount));
     }
 
   } else { // Transmission was not a success
 
     failCount++;
-    debug("Failed transmission");
+    // debug("Failed sendData = "+String(failCount));
   }
 
   // If lost more than 10 transmissions, we can assume that connection is lost.
   if (failCount > 10) {
     switch (state) {
       case PAIRING: break; // keep pairing mode
-      case CONNECTING: break;
-      default: // connected
-        // state = CONNECTING;
+      case CONNECTING: 
+      #ifdef DEBUG_WITHOUT 
+        state = IDLE;
+      #endif
+      break;
+      #ifndef DEBUG_WITHOUT
+        default:
         vibrate(200);
+      #endif
+       // connected
+
+        // if (i>20) {
+        // vibrate(200);
+        // i++;
+        // } 
+        // else {
+        //   state = CONNECTING;
+        // }
+
+
+        // debug("Disconnected Go to connection page");
+        // if (stopped && secondsSince(lastInteraction) > REMOTE_SLEEP_TIMEOUT) {sleep();}
+        // else
+        // {
+        //   vibrate(200);
+
+        // }
+
+        // if (SuccessfulConnection) {
+        //   debug("Fail count SuccessfulConnection");
+        // }
+        // else
+        // {
+        // state = CONNECTING;
+        // debug("Connecting after fail count = " + string(failCount));
+        // }
+
+        // #ifdef DEBUG 
+        //   state = IDLE;
+        // #endif
+
     }
   }
 
@@ -1073,13 +1121,15 @@ void updateMainDisplay()
       switch (page) {
         case PAGE_MAIN:
           drawBatteryLevel(); // 2 ms
-          drawMode(); debug_E("Update Diplay 39450");
+          drawMode(-1, 10); debug_E("Update Diplay 39450");
           drawSignal(); // 1 ms
           drawMainPage();
           break;
         case PAGE_EXT:  drawExtPage(); debug_E("Update Diplay 65921"); break; 
         case PAGE_MENU: drawSettingsMenu(); debug_E("Update Diplay 25921"); break;
         case PAGE_DEBUG: drawDebugPage(); debug_E("Update Diplay 20921"); break;
+        case PAGE_TELEMETRY: drawTelemetryPage(); debug_E("Draw temeletry page 218383"); break;
+        case PAGE_ODOMETER: drawOdometerPage(); break;
       }
   }
 
@@ -1300,7 +1350,7 @@ void drawSettingsMenu() {
   // wheel = up/down
   int position = readThrottlePosition();
 
-  debug("throttle position: " + String(position));
+  // debug("throttle position: " + String(position));
 
   // todo: wheel control
   if (position < default_throttle - 30) {
@@ -1310,7 +1360,7 @@ void drawSettingsMenu() {
     if (currentMenu > 0) currentMenu -= 0.25;
   }
 
-  debug("current menu: " + String(currentMenu));
+  // debug("current menu: " + String(currentMenu));
 
   switch (menuPage) {
 
@@ -1373,7 +1423,7 @@ void drawSettingsMenu() {
           switch (subMenuItem){
             case MODE_SLOW:
               tempSettings.drivingMode = 0;
-          break;
+            break;
             case MODE_INTERMEDIATE:
               tempSettings.drivingMode = 1;
             break;
@@ -1391,12 +1441,15 @@ void drawSettingsMenu() {
     case MENU_INFO:
       switch (subMenuItem) {
         case INFO_DEBUG: drawDebugPage(); break;
+        case INFO_TELEMETRY: drawTelemetryPage(); break;
+        case INFO_ODOMETER: drawOdometerPage(); break;
       }
       break;
 
     case MENU_REMOTE:
       switch (subMenuItem) {
       case REMOTE_CALIBRATE: calibrateScreen(); break;
+      // case REMOTE_MODE: drawModeSelection(); break;
       }
       break;
 
@@ -1413,7 +1466,7 @@ void drawSettingsMenu() {
         case MODE_SLOW: drawModePage(0); break;
         case MODE_INTERMEDIATE: drawModePage(1); break;
         case MODE_PRO: drawModePage(2); break;
-    }
+      }
     break;
     }
     break; //break MENU_ITEM
@@ -1452,8 +1505,36 @@ void drawDebugPage() {
 
   y += 25;
   drawStringCenter(String(readThrottlePosition()), String(hallValue), y);
+
   y+= 25;
   drawStringCenter(String(batteryLevelVolts())," V", y);
+}
+
+
+void drawTelemetryPage() {
+  float value;
+  int x = 5;
+  int y = 17;
+  int s = 11;
+  drawThrottle();
+  // drawMode(55, 10);
+  // throttle = telemetry.getInputCurrent
+  state = NORMAL;
+  value = throttle;
+  drawString(String("Throttle"), x, y, fontMicro);
+  drawString(String(value, 0),x, y+10,fontMicro);
+  
+  drawString(String(((value/127)*100)-100, 0)  + String("%") , x+25, y+10, fontMicro);
+  drawString(String("Motor Amps"), x, y+10+s, fontMicro);
+  drawString(String(telemetry.getMotorCurrent()),x, y+10+s+s, fontMicro);
+  drawString(String("Batt Amps"), x, y+10+s+s+s, fontMicro);
+  drawString(String(telemetry.getInputCurrent()),x, y+10+s+s+s+s, fontMicro);
+  drawString(String("FET Temp"), x, y+10+s+s+s+s+s, fontMicro);
+  drawString(String(telemetry.tempFET)+" C",x, y+10+s+s+s+s+s+s, fontMicro);
+  drawString(String("Motor Temp"), x, y+10+s+s+s+s+s+s+s, fontMicro);
+  drawString(String(telemetry.tempFET)+ " C",x, y+10+s+s+s+s+s+s+s+s, fontMicro);
+  // drawString(String(telemetry.tempFET) + " C    "
+    // + String(telemetry.tempMotor) + " C", -1, 114, fontPico);
 }
 
 void drawModePage(int mode){
@@ -1477,12 +1558,13 @@ void drawModePage(int mode){
     waitRelease(PIN_TRIGGER);
   }
 }
-// void drawOdometerPage() {
-//   int value;
-//   value=1;
-//   drawStringCenterFont("300", "Total Distance Travelled", 20, fontDigital, fontDesc);
-//   // drawStringCenter("BIGFAT NUMBER")  
-//}
+
+void drawOdometerPage() {
+  int value;
+  value=1;
+  drawStringCenterFont("300", "Total Distance Travelled", 20, fontDigital, fontDesc);
+  // drawStringCenter("BIGFAT NUMBER")  
+}
 
 int getStringWidth(String s) {
 
@@ -1509,7 +1591,7 @@ float speed() {
   return telemetry.getSpeed();
 }
 
-void drawMode() {
+void drawMode(int x, int y) {
 
   String m = "?";
 
@@ -1533,7 +1615,7 @@ void drawMode() {
   }
 
   // top center
-  drawString(m, -1, 10, fontPico);
+  drawString(m, x, y, fontPico); //defauly x=-1 y=10
 
 }
 
@@ -1614,6 +1696,7 @@ void drawMainPage() {
   int x = 0;
   int y = 37;
   int h;
+  // drawThrottle(); // to have bars on the side in the main screen
 
   //  display.drawFrame(0,0,64,128);
 
@@ -1654,6 +1737,7 @@ void drawMainPage() {
     }
 
     drawString(m, -1, 50, fontDesc);
+    // drawString(String(tempSettings.drivingMode), -1, 50, fontDesc);
   }
   value = batteryPackPercentage( telemetry.getVoltage() );
   drawBatteryPercentVoltage(value);
@@ -1807,16 +1891,47 @@ void drawStringCenter(String value, String caption, uint8_t y) {
 
 }
 
+void drawStringCenterFont(String value, String caption, uint8_t y, const GFXfont *fontN, const GFXfont *fontW) {
+
+  // draw digits
+  int x = 0;
+
+  display.setFont(fontN); //fontDigital
+
+  display.setTextSize(0.5);             // Normal 1:1 pixel scale //default = 1
+  display.setTextColor(WHITE);        // Draw white text
+
+  display.setCursor(x, y);
+  display.print(value);
+
+  // draw caption km/%
+  x += getStringWidth(value) + 4;
+  y -= 9;
+
+  display.setCursor(x, y);
+  display.setFont(fontW); //fontDesc
+
+  display.print(caption);
+
+}
+
 /*
    Print the signal icon if connected, and flash the icon if not connected
 */
 void drawSignal() {
-
+  float signalStrength_I;
   int x = 45;
   int y = 11;
+  #ifdef DEBUG_WITHOUT
+  signalStrength_I = 100;
+  #else
+  
+  signalStrength_I = signalStrength;
+  #endif
+
 
   for (int i = 0; i < 9; i++) {
-    if (round((100 / 9) * i) <= signalStrength)
+    if (round((100 / 9) * i) <= signalStrength_I)
       drawVLine(x + (2 * i), y - i, i);
   }
 }

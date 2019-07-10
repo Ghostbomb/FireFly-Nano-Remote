@@ -1,3 +1,30 @@
-Find where to invert the hall sensor
 
-Cannot navigate in menu
+
+
+Small things:
+1. Find where to invert the hall sensor
+2. Right a report on how to setup a new remote.
+
+
+
+Feature List:
+1. Add a tachometer to the remote. (Incorporate the same way the calibrate hall sensor so it saves it even if you upload new code.) (.todo where code is not implemetend into the menu system)
+2. wh/mi on main page and probably an esmitate range based on wh/mi (watt hour / per mile)
+3. Telemetry page with amps draw, voltage min/max (just like xmatic)
+    Menu Layout:
+        Telemetry (sub menu)
+            Speed (sub menu)
+                min and max speeds
+                avg speed (maybe too much)
+            Amps (sub menu)
+                min and max
+            Voltage (sub menu)
+                consumed/charged mAh
+                consumed/charge wh
+                efficiency wh/mi
+                min max volts
+            Temps (sub menu)
+                mins max
+                
+4. Make board settings changeable in remote or atleast viewable for now. 
+5. make board settings a new seperate file so easier to migrate betwenn verisons. check out the feather board manuial on updating and see if good or bad and then get influenced by it and DO IT!:)
