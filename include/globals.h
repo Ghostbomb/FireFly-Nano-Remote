@@ -8,7 +8,6 @@
 
 // #define DEBUG // Uncomment DEBUG if you need to debug the remote
 // #define DEBUG_OP //extra Debugging, basiccely showing everything its doing
-// #define DEBUG_WITHOUT //debug mode to access menu without having to connect to receiver
 
 #define REVISION_ID "$Id$"
 #define FW_VERSION "development"
@@ -19,7 +18,6 @@ const COMM_PACKET_ID VESC_COMMAND = COMM_GET_VALUES; // VESC
 
 #define MilesSetup     //UNCOMMENT for Miles per hour. Then change number below to miles per hour if uncommented(defined)
 #define InvertTrigger HIGH   //(LOW or HIGH) Change to LOW or HIGH if trigger is soldered wrong or menu/cruise control is acting strange
-// #define POLICE_MODE   //TODO
 #define VOLTAGE_DIVIDER 
 
 /*
@@ -29,6 +27,9 @@ const COMM_PACKET_ID VESC_COMMAND = COMM_GET_VALUES; // VESC
   Slide the board backwards while standing on it or foot brake
   to produce a spike in the current and stop the board.
 */
+
+#define MilesSetup     //UNCOMMENT for Miles per hour. Then change number below to miles per hour if uncommented(defined)
+#define InvertTrigger HIGH   //(LOW or HIGH) Change to LOW or HIGH if trigger is soldered wrong or menu/cruise control is acting strange
 
 //Auto Cruise
 const bool  AUTO_CRUISE_ON = false;     // disabled by default
@@ -72,20 +73,12 @@ const int C_MAX_SPEED = 25;       // Max Speed
 const int C_MAX_RANGE = 10;       // MAX RANGE
 const int BATTERY_CELLS = 10;
 const float BATTERY_VOLTAGE_CUTOFF_START = 36;   // "Battery Voltage Cutoff Start" Should come directly from VESC Tool
-const float BATTERY_VOLTAGE_CUTOFF_END   = 35;     // "Battery Voltage Cutoff End"   Should come directly from VESC Tool
+const float BATTERY_VOLTAGE_CUTOFF_END   = 34;     // "Battery Voltage Cutoff End"   Should come directly from VESC Tool
 const int BATTERY_TYPE = 1;     // 0: LI-ION | 1: LIPO
 const int MOTOR_POLES = 14;
 const int WHEEL_DIAMETER = 90;
 const int WHEEL_PULLEY = 36;
 const int MOTOR_PULLEY = 15;
-
-
-
-
-
-
-
-
 
 //MPH calculations DON'T CHANGE
 #ifdef MilesSetup
@@ -112,6 +105,9 @@ const char SPEED_UNIT[5] = "km/h";
 #endif
 
 const float minCellVoltage = (BATTERY_VOLTAGE_CUTOFF_END/BATTERY_CELLS);
+
+// MIN_BATTERY_VOLTAGE_START
+// MIN_BATTERY_VOLTAGE_END
 
 #define VERSION 2
 
@@ -196,9 +192,7 @@ struct TelemetryPacket {
   int16_t motorCurrent; // motor amps * 100
   int16_t inputCurrent; // battery amps * 100
   // -----------------
-  // int16_t ampHours;
-  // int16_t ampHoursCharged;
-  // -----------------
+
   uint16_t f2w(float f) { return f * 100; } // pack float
   float w2f(uint16_t w) { return float(w) / 100; }; // unpack float
 
@@ -230,12 +224,6 @@ struct TelemetryPacket {
 
   float getInputCurrent() { return w2fi(inputCurrent); }
   void setInputCurrent(float f) { inputCurrent = f2wi(f); }
-
-  // float getAmpHours() { return w2fi(ampHours); }
-  // void setAmpHours(float f) { ampHours = f2wi(f); }
-
-  // float getAmpHoursCharged() { return w2fi(ampHoursCharged); }
-  // void setAmpHoursCharged(float f) { ampHoursCharged = f2wi(f); }
 };
 
 // board setting

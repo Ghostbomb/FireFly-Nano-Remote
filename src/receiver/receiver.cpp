@@ -985,21 +985,17 @@ void getUartData()
 
     // debug
     #ifdef FAKE_UART
-      // int i;
       batterySensor.add(41 + (rand()%40) / 100.0);
       telemetry.setVoltage(batterySensor.get());
       telemetry.setDistance(rand()%30);
       telemetry.setSpeed(0);
       telemetry.setMotorCurrent(-21);
       telemetry.setInputCurrent(12);
-      // telemetry.setAmpHours(i*2);
-      // telemetry.setAmpHoursCharged(i);
       telemetry.tempFET = 37;
       telemetry.tempMotor = 60;
 
       telemetryUpdated = true;
       delay(7);
-      // i++;
       return;
     #endif
 
@@ -1023,8 +1019,6 @@ void getUartData()
       telemetry.setDistance(tach2dist(UART.data.tachometerAbs));
       telemetry.setMotorCurrent(UART.data.avgMotorCurrent);
       telemetry.setInputCurrent(UART.data.avgInputCurrent);
-      // telemetry.setAmpHours(UART.data.ampHours);
-      // telemetry.setAmpHoursCharged(UART.data.ampHoursCharged);
 
       // temperature
       telemetry.tempFET = round(UART.data.tempFET);

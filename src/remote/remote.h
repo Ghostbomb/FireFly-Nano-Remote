@@ -50,7 +50,6 @@ struct RemoteSettings {
   short maxHallValue = MAX_HALL;
   uint32_t boardID = 0;
   uint8_t drivingMode = 1;
-  // short odometer   //distance traveled
 } settings;
 
 RemoteSettings tempSettings;
@@ -88,9 +87,7 @@ enum ui_page {
   PAGE_EXT,   // current / settings
   PAGE_MENU,
   PAGE_MAX,
-  PAGE_DEBUG,
-  PAGE_TELEMETRY,
-  PAGE_ODOMETER
+  PAGE_DEBUG
 } page = PAGE_MAIN;
 
 // Battery monitoring
@@ -142,7 +139,6 @@ int cruiseStartThrottle;
 int cruiseThrottle;
 
 bool requestUpdate = false;
-// bool SuccessfulConnection = false; 
 
 // menu
 enum menu_page {
@@ -156,7 +152,7 @@ const byte subMenus = 7;
 const byte mainMenus = 4;
 
 String MENUS[mainMenus][subMenus] = {
-    { "Info", "Debug", "Telemetry"/*.TODO*/, "Odometer"/*.TODO*/, "", "", "" },
+    { "Info", "Debug", "", "", "", "", "" },
     { "Remote", "Calibrate", "Pair", "", /*"Auto off"*/ "", "", "" },
     { "Board", "Update", "", "", "", "", "" //, "Max Speed", "Range", "Cells", "Battery", "Motor" 
     },
@@ -256,7 +252,7 @@ int cruiseControl();
 void drawBatteryLevel();
 void drawBatteryPercentVoltage(float value);
 void drawConnectingScreen();
-void drawMode(int x, int y);
+void drawMode();
 void drawMainPage();
 void drawExtPage();
 void drawSettingsMenu();
@@ -266,10 +262,7 @@ void drawDebugPage();
 void drawSignal();
 void drawStringCenter(String value, String caption, uint8_t y);
 void drawString(String string, int x, int y, const GFXfont *font);
-void drawStringCenterFont(String value, String caption, uint8_t y, const GFXfont *fontN, const GFXfont *fontW);
-void drawOdometerPage();
 void drawThrottle();
-void drawTelemetryPage();
 void drawModePage(int mode);
 int getStringWidth(String s);
 void handleButtons();
