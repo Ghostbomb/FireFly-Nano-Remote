@@ -13,14 +13,16 @@
 #define REVISION_ID "$Id$"
 #define FW_VERSION "development"
 
-// #define RECEIVER_SCREEN
-const COMM_PACKET_ID VESC_COMMAND = COMM_GET_VALUES; // VESC
+const COMM_PACKET_ID VESC_COMMAND = COMM_GET_VALUES;       // VESC
 // const COMM_PACKET_ID VESC_COMMAND = COMM_GET_UNITY_VALUES; // Enertion Unity
 
-#define MilesSetup     //UNCOMMENT for Miles per hour. Then change number below to miles per hour if uncommented(defined)
-#define InvertTrigger HIGH   //(LOW or HIGH) Change to LOW or HIGH if trigger is soldered wrong or menu/cruise control is acting strange
-// #define POLICE_MODE   //TODO
-#define VOLTAGE_DIVIDER 
+#define MilesSetup         //UNCOMMENT for Miles per hour. Then change number below to miles per hour if uncommented(defined)
+#define InvertTrigger HIGH //(LOW or HIGH) Change to LOW or HIGH if trigger is soldered wrong or menu/cruise control is acting strange
+#define POLICE_MODE        //TODO
+#define VOLTAGE_DIVIDER
+
+#define REMOTE_SERIAL 9600
+#define RECEIVER_SERIAL 9600
 
 /*
   Endless ride - when remote is off and speed is over 12 km/h for 3 seconds,
@@ -31,29 +33,30 @@ const COMM_PACKET_ID VESC_COMMAND = COMM_GET_VALUES; // VESC
 */
 
 //Auto Cruise
-const bool  AUTO_CRUISE_ON = false;     // disabled by default
-const float C_PUSHING_SPEED = 12.0;       // Pushing Speed to initiate the Auto Cruise
+const bool AUTO_CRUISE_ON = false;      // disabled by default
+const float C_PUSHING_SPEED = 7.0;      // Pushing Speed to initiate the Auto Cruise
 const float PUSHING_TIME = 3.0;         // seconds
 const float CRUISE_CURRENT_SPIKE = 5.0; // Amps
 
 // board will stop after 30s if current is low
-const float AUTO_CRUISE_TIME = 30.0;    // seconds
-const float CRUISE_CURRENT_LOW = 5.0;   // Amps
+const float AUTO_CRUISE_TIME = 30.0;  // seconds
+const float CRUISE_CURRENT_LOW = 5.0; // Amps
 
 // auto stop if remote is off and speed is over 20 km/h
-const float C_MAX_PUSHING_SPEED = 20.0;   // this should be in mph if MilesSetup is defined
+const float C_MAX_PUSHING_SPEED = 20.0; // this should be in mph if MilesSetup is defined
 
 // Auto stop (in seconds)
-const float AUTO_BRAKE_TIME = 5.0;    // time to apply the full brakes
-const int AUTO_BRAKE_RELEASE = 5;     // time to release brakes after the full stop
+const float AUTO_BRAKE_TIME = 5.0; // time to apply the full brakes
+const int AUTO_BRAKE_RELEASE = 5;  // time to release brakes after the full stop
 
 // UART
 const int UART_SPEED = 115200;
 const uint16_t uartPullInterval = 150;
-const int UART_TIMEOUT = 10; // 10ms for 115200 bauds, 100ms for 9600 bauds
-const int REMOTE_RX_TIMEOUT = 20; // ms
+const int UART_TIMEOUT = 10;          // 10ms for 115200 bauds, 100ms for 9600 bauds
+const int REMOTE_RX_TIMEOUT = 20;     // ms
+const int MIN_SPEED_FOR_MENU = 2;     //affects at what speed the remote is going to vibrate like mad and what speed you can use the menu.
 
-const int REMOTE_LOCK_TIMEOUT = 10; // seconds to lock throttle when idle
+const int REMOTE_LOCK_TIMEOUT = 10;   // seconds to lock throttle when idle
 const int REMOTE_SLEEP_TIMEOUT = 180; // seconds to go to sleep mode
 
 const float VOLTAGE_MULTIPLIER = 0.001388;
@@ -68,29 +71,21 @@ const int BATTERY_MIN = -12;
 const int BATTERY_MAX = 20;
 
 // default board configuration
-const int C_MAX_SPEED = 25;       // Max Speed
-const int C_MAX_RANGE = 10;       // MAX RANGE
+const int C_MAX_SPEED = 25;                    // Max Speed
+const int C_MAX_RANGE = 10;                    // MAX RANGE
 const int BATTERY_CELLS = 10;
-const float BATTERY_VOLTAGE_CUTOFF_START = 36;   // "Battery Voltage Cutoff Start" Should come directly from VESC Tool
-const float BATTERY_VOLTAGE_CUTOFF_END   = 35;     // "Battery Voltage Cutoff End"   Should come directly from VESC Tool
-const int BATTERY_TYPE = 1;     // 0: LI-ION | 1: LIPO
+const float BATTERY_VOLTAGE_CUTOFF_START = 36; // "Battery Voltage Cutoff Start" Should come directly from VESC Tool
+const float BATTERY_VOLTAGE_CUTOFF_END = 35;   // "Battery Voltage Cutoff End"   Should come directly from VESC Tool
+const int BATTERY_TYPE = 1;                    // 0: LI-ION | 1: LIPO
 const int MOTOR_POLES = 14;
 const int WHEEL_DIAMETER = 90;
 const int WHEEL_PULLEY = 36;
 const int MOTOR_PULLEY = 15;
 
-
-
-
-
-
-
-
-
 //MPH calculations DON'T CHANGE
 #ifdef MilesSetup
 const float PUSHING_SPEED = (C_PUSHING_SPEED);
-const float MAX_PUSHING_SPEED = (C_MAX_PUSHING_SPEED); 
+const float MAX_PUSHING_SPEED = (C_MAX_PUSHING_SPEED);
 const int MAX_SPEED = (C_MAX_SPEED);
 const int MAX_RANGE = (C_MAX_RANGE);
 const char DISTANCE_UNIT[3] = "mi";
@@ -111,7 +106,7 @@ const char SMALL_DISTANCE_UNIT[3] = "m";
 const char SPEED_UNIT[5] = "km/h";
 #endif
 
-const float minCellVoltage = (BATTERY_VOLTAGE_CUTOFF_END/BATTERY_CELLS);
+const float minCellVoltage = (BATTERY_VOLTAGE_CUTOFF_END / BATTERY_CELLS);
 
 #define VERSION 2
 
