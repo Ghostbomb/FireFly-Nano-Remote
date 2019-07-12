@@ -49,9 +49,10 @@ void setup()
 {
   // wait for VESC?
   delay(1000);
-
-  Serial.begin(115200);
-  debug_E("Serial Begin")
+  #ifdef DEBUG
+  Serial.begin(RECEIVER_SERIAL);
+  #endif
+  debug_E("Serial Begin");
 
   // while (!Serial) {}; // wait for serial port to connect. Needed for native USB port only
 

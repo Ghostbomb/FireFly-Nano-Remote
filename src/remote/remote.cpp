@@ -75,11 +75,11 @@ void setup() {
     // display.powerOn();
 
   #ifdef DEBUG
-    Serial.begin(9600);
+    Serial.begin(REMOTE_SERIAL);
     debug("Debug Mode ON");
   #endif
   #ifdef DEBUG_OP
-    Serial.begin(9600);
+    Serial.begin(REMOTE_SERIAL);
     debug("Over Powered Debug Mode ON");
   #endif  
 
@@ -179,11 +179,6 @@ void radioLoop() {
 
   calculateThrottle();
   transmitToReceiver();
-  // if (PINNUTTONSTATUSnumberi == 100){
-  // debug("PIN_BUTTON Status = " + String(buttonVal));
-  // debug("PIN_Trigger Status = " + String(triggerActive()));
-  
-// }else { PINNUTTONSTATUSnumberi++; }
 }
 
 void checkBatteryLevel() {
@@ -903,7 +898,17 @@ void transmitToReceiver() {
       break;
       #ifndef DEBUG_WITHOUT
         default:
+        if(speed()<MIN_SPEED_FOR_MENU)
+        {
+          vibrate(200);
+          delay(1);
+          vibrate(200);
+          state = CONNECTING;
+        } else
+        {
         vibrate(200);
+        }
+        
       #endif
        // connected
 
@@ -1337,7 +1342,7 @@ void drawSettingsMenu() {
   // check speed
   if (state != MENU) {
 
-    if (telemetry.getSpeed() != 0) {
+    if (telemetry.getSpeed() >MIN_SPEED_FOR_MENU) {
       drawString("Stop", -1, y=50, fontDesc);
       drawString("to use", -1, y+=14, fontDesc);
       drawString("menu", -1, y+=14, fontDesc);
