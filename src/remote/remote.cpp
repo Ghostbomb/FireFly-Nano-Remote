@@ -87,6 +87,7 @@ void setup() {
 
   loadSettings();
   debug_E("Loading settings 85969");
+  debug_E("Test var after load settings"+ String(testvar));
 
 
   #ifdef PIN_VIBRO
@@ -399,7 +400,7 @@ void sleep()
   #elif ESP32
 
     // wait for button release
-    while (pressed(PIN_BUTTON)) vTaskDelay(10); //delay(500);     //power off //todo list : maybe change vTaskDelay(10 > to like 200) so it waits longer
+    while (pressed(PIN_BUTTON)) vTaskDelay(10); //delay(500);     //power off // TODO: list : maybe change vTaskDelay(10 > to like 200) so it waits longerf
 
     // keep RTC on
     esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_PERIPH, ESP_PD_OPTION_ON);
@@ -505,7 +506,7 @@ void sleep2()
 */
 
 bool pressed(int button) {
-  return digitalRead(button) == InvertTrigger;
+  return digitalRead(button) == InvertTriggerHL;
 }
 
 void waitRelease(int button) {
@@ -587,7 +588,7 @@ bool inRange(short val, short minimum, short maximum) {
    Return true if trigger is activated, false otherwice
 */
 bool triggerActive() {
-  bool active = digitalRead(PIN_TRIGGER) == InvertTrigger; //Probably change this if inverted. LOW 0, HIGH 1
+  bool active = digitalRead(PIN_TRIGGER) == InvertTriggerHL; //Probably change this if inverted. LOW 0, HIGH 1
   // debug("Trigger active: " + String(active) + " PIN_TRIGGER: " + String(PIN_TRIGGER)+" active "+ String(active));
   if (active) keepAlive();
   return active;
@@ -1187,11 +1188,20 @@ void drawConnectingScreen() {
 
   display.setRotation(DISPLAY_ROTATION);
 
-  int y = 8;
+  int y = 1;
 
   display.drawXBitmap((64-24)/2, y, logo, 24, 24, WHITE);
 
-  y += 38;
+
+  #ifdef MICHAEL
+  drawString("Michael", -1, 32, fontMicro);
+  #endif
+
+  #ifdef PAVLO
+  drawString("Pavlo", -1, 32, fontMicro);
+  #endif
+
+  y += 42;
   drawString("Firefly Nano", -1, y, fontMicro);
   drawString(String(RF_FREQ, 0) + " Mhz", -1, y + 12, fontMicro);
 
@@ -1231,15 +1241,50 @@ void drawThrottle() {
     // right side - throttle
     int h = map(throttle - 127, 0, 127, 0, 128);
     drawVLine(63, 128 - h, h); // nose
-    debug_E("drawing throttle right");
   }
 
   if (throttle < 127) {
     // left side - brake
     int h = map(throttle, 0, 127, 128, 0);
     drawVLine(0, 0, h); // nose
-    debug_E("drawing throttle left");
   }
+}
+
+void drawThrottleCompact(int x, int y) {
+ 
+  if (throttle > 127) {
+    // right side - throttle
+    int h = map(throttle - 127, 0, 127, 0, 128);
+    drawVLine(x, y+128 - h, h); // nose
+    drawVLine(x+1, y+128 - h, h); // nose
+  }
+
+  if (throttle < 127) {
+    // left side - brake
+    int h = map(throttle, 0, 127, 128, 0);
+    drawVLine(x, y, h); // nose
+    drawVLine(x+1, y, h); // nose
+  }
+}
+
+int calculateMaxThrottle(float i){
+  switch (tempSettings.drivingMode)
+  {
+  case 0:
+    maxthrottlecalc = 174.5;
+    break;
+  case 1:
+    maxthrottlecalc = 212;
+    break;
+  case 2:
+    maxthrottlecalc = 255;
+    break;
+  
+  // default:
+  //   return 128;
+  //   break;
+  }
+  return (maxthrottlecalc / i);
 }
 
 void calibrateScreen() {
@@ -1513,6 +1558,8 @@ void drawDebugPage() {
 
   y+= 25;
   drawStringCenter(String(batteryLevelVolts())," V", y);
+
+  
 }
 
 
@@ -1567,7 +1614,7 @@ void drawModePage(int mode){
 void drawOdometerPage() {
   int value;
   value=1;
-  drawStringCenterFont("300", "Total Distance Travelled", 20, fontDigital, fontDesc);
+  drawStringCenterFont("300", "Total Distance Travelled", 0 , 20, fontDigital, fontDesc);
   // drawStringCenter("BIGFAT NUMBER")  
 }
 
@@ -1692,6 +1739,8 @@ void drawExtPage() {
 /*
    Print the main page: Throttle, battery level and telemetry
 */
+
+#ifdef MAINPAGE_FULL
 void drawMainPage() {
 
   float value;
@@ -1846,8 +1895,8 @@ void drawMainPage() {
 
   // position
   drawBox(x, y + 2, value / range * 62, 4);
+  
 }
-
 void drawBatteryPercentVoltage(float value) {
 
   // float value;
@@ -1871,6 +1920,258 @@ void drawBatteryPercentVoltage(float value) {
   drawString(String(telemetry.getVoltage(), 1), 44, 73, fontPico);
 
 }
+
+/*
+   Print the remotes battery level as a battery on the OLED
+*/
+void drawBatteryLevel() { //for remote battery level
+
+  int x = 4;
+  int y = 2;
+
+  // blinking
+  if (batteryLevel < 20) {
+    if (millisSince(lastSignalBlink) > 750) {
+        signalBlink = !signalBlink;
+        lastSignalBlink = millis();
+      }
+  } else signalBlink = false;
+
+  drawFrame(x, y, 18, 9);
+  drawBox(x + 18, y + 2, 2, 5);
+
+  // blink
+  if (signalBlink) return;
+
+  // battery level
+  for (uint8_t i = 0; i < 5; i++) {
+    uint8_t p = round((100 / 5) * i);
+    if (p <= batteryLevel)
+    {
+      drawBox(x + 2 + (3 * i), y + 2, 2, 5);
+    }
+  }
+
+  if (batteryLevel <= 19) { // < 10%
+    drawString(String(batteryLevel), x + 7, y + 6, fontMicro);
+  }
+}
+#endif
+
+#ifdef MAINPAGE_LITE
+int BatteryBoardY = 60;
+
+void drawMainPage() {
+
+  float value;
+  String s;
+
+  int x = 0;
+  int y = 37;
+  int h;
+  // drawThrottle(); // to have bars on the side in the main screen
+  drawThrottleCompact(0,0);
+
+  //  display.drawFrame(0,0,64,128);
+
+  // --- Speed ---
+  value = (speed());
+
+  float speedMax = boardConfig.maxSpeed;
+  String m = SPEED_UNIT;
+  drawStringCenterFont(String(value, 0), m, 12, y, fontDigital, fontDesc);
+
+    switch (receiverState) {
+      case STOPPING: m = "Stopping"; break;
+      case STOPPED: m = "Stopped"; break;
+      case PUSHING: m = "Pushing"; break;
+      case COASTING: m = "Coasting"; break;
+      case ENDLESS: m = "Cruise"; break;
+      case UPDATE: m = "Update"; break;
+      default: m = " ";
+    }
+
+    drawString(m, 20, 115, fontDesc);
+    // drawString(String(tempSettings.drivingMode), -1, 50, fontDesc);
+  
+  value = batteryPackPercentage( telemetry.getVoltage() );
+  drawBatteryPercentVoltage(value);
+  // // --- Battery ---
+
+  // y = 74;
+
+  // int battery = (int) value;
+  // drawStringCenter(String(battery), "%", y);
+
+  // drawString(String(telemetry.getVoltage(), 1), 44, 73, fontPico);
+
+  y = BatteryBoardY+6;    //location 
+  x = 1 + 9; //location
+
+  // longboard body
+  h = 12;                      //height of the board
+  uint8_t w = 41 - 9;          //width of the longboard
+  drawHLine(x + 10, y, w);     // top line
+  drawHLine(x + 10, y + h, w); // bottom
+
+  // nose
+  drawHLine(x + 2, y + 3, 5);     // top line
+  drawHLine(x + 2, y + h - 3, 5); // bottom
+
+  drawPixel(x + 1, y + 4);
+  drawVLine(x, y + 5, 3); // nose
+  drawPixel(x + 1, y + h - 4);
+
+  display.drawLine(x + 6, y + 3, x + 9, y, WHITE);
+  display.drawLine(x + 6, y + h - 3, x + 9, y + h, WHITE);
+
+  // tail
+  drawHLine(64 - 6 - 2, y + 3, 5);     // top line
+  drawHLine(64 - 6 - 2, y + h - 3, 5); // bottom
+
+  drawPixel(64 - 3, y + 4);
+  drawVLine(64 - 2, y + 5, 3); // tail
+  drawPixel(64 - 3, y + h - 4);
+
+  display.drawLine(64 - 6 - 3, y + 3, 64 - 6 - 6, y, WHITE);
+  display.drawLine(64 - 6 - 3, y + h - 3, 64 - 6 - 6, y + h, WHITE);
+
+  // longboard wheels
+  drawBox(x + 3, y, 3, 2); // left
+  drawBox(x + 3, y + h - 1, 3, 2);
+  drawBox(64 - 7, y, 3, 2); // right
+  drawBox(64 - 7, y + h - 1, 3, 2);
+
+  // battery sections
+  for (uint8_t i = 0; i < 11; i++) {
+    if (round((100 / 14) * i) <= value) {
+      drawBox(x + i * 3. + 10, y + 2, 1, h - 3);
+    }
+  }
+
+  // --- Distance in km/miles ---
+
+  value = telemetry.getDistance();
+  x = 15;
+  y = 100;
+
+  #ifdef MilesSetup
+  String km;
+  if (value >= 0.5) {
+    km = String(value, 1); //unit: miles
+    drawStringCenterFont(km, DISTANCE_UNIT, x, y, fontDigital, fontDesc);
+  } else {
+    km = String(value * 5280, 0); //converts to feet
+    drawStringCenterFont(km, DISTANCE_UNIT, x, y, fontDigital, fontDesc);
+  }
+  #endif
+
+  #ifndef MilesSetup
+  String km;
+  if (value >= 1) {
+    km = String(value, 0); //unit: kilometers
+    drawStringCenterFont(km, DISTANCE_UNIT, x, y, fontDigital, fontDesc);
+  } else {
+    km = String(value * 1000, 0); //converts to meters
+    drawStringCenterFont(km, DISTANCE_UNIT, x, y, fontDigital, fontDesc);
+  }
+  #endif
+
+  // max distance
+  int range = boardConfig.maxRange;
+  if (value > range) range = value;
+
+  // drawString(String(range), 52, 118, fontPico);
+
+  // dots
+  // y = 122;
+  // for (uint8_t i = 0; i < 16; i++) {
+  //   drawBox(x + i * 4, y + 4, 2, 2);
+  // }
+
+  // start end
+  // drawBox(x, y, 2, 6);
+  // drawBox(62, y, 2, 6);
+  // drawBox(30, y, 2, 6);
+
+  // position
+  // drawBox(x, y + 2, value / range * 62, 4);
+}
+
+void drawBatteryPercentVoltage(float value) {
+
+  // float value;
+  int x = 10;
+  int y = BatteryBoardY; //74 dfeault
+
+  // batteryVolt = telemetry.getVoltage();
+
+  if(telemetry.getVoltage() <= BATTERY_VOLTAGE_CUTOFF_START){ //if actual voltage is less than battery voltage cutoff
+    if (millisSince(lastSignalBlinkFast) > 250) {
+        signalBlinkFast = !signalBlinkFast;
+        lastSignalBlinkFast = millis();
+      }
+  } else signalBlinkFast = false;
+
+  if (signalBlinkFast) return; //blink
+
+  int battery = (int)value;
+  drawStringCenterFont(String(battery), "%", x, y, fontDigital, fontDesc);
+
+  drawString(String(telemetry.getVoltage(), 1), x+34, y+1, fontPico);
+}
+
+/*
+   Print the remotes battery level as a battery on the OLED
+*/
+void drawBatteryLevel() { //for remote battery level 
+
+  int x = 35;
+  int y = 116;
+
+  // blinking
+  if (batteryLevel < 20) {
+    if (millisSince(lastSignalBlink) > 750) {
+        signalBlink = !signalBlink;
+        lastSignalBlink = millis();
+      }
+  } else signalBlink = false;
+
+  drawFrame(x, y, 18, 9);
+  drawBox(x + 18, y + 2, 2, 5);
+
+  // blink
+  if (signalBlink) return;
+
+  // battery level
+  for (uint8_t i = 0; i < 5; i++) {
+    uint8_t p = round((100 / 5) * i);
+    if (p <= batteryLevel)
+    {
+      drawBox(x + 2 + (3 * i), y + 2, 2, 5);
+    }
+  }
+
+  if (batteryLevel <= 19) { // < 10%
+    drawString(String(batteryLevel), x + 7, y + 6, fontMicro);
+  }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+#endif
+
+
+
 
 void drawStringCenter(String value, String caption, uint8_t y) {
 
@@ -1896,10 +2197,10 @@ void drawStringCenter(String value, String caption, uint8_t y) {
 
 }
 
-void drawStringCenterFont(String value, String caption, uint8_t y, const GFXfont *fontN, const GFXfont *fontW) {
+void drawStringCenterFont(String value, String caption, int x, uint8_t y, const GFXfont *fontN, const GFXfont *fontW) {
 
   // draw digits
-  int x = 0;
+  // int x = 0;
 
   display.setFont(fontN); //fontDigital
 
@@ -1939,38 +2240,6 @@ void drawSignal() {
     if (round((100 / 9) * i) <= signalStrength_I)
       drawVLine(x + (2 * i), y - i, i);
   }
-}
-
-
-/*
-   Print the remotes battery level as a battery on the OLED
-*/
-void drawBatteryLevel() { //for remote battery level
-
-  int x = 2;
-  int y = 2;
-
-  // blinking
-  if (batteryLevel < 20) {
-    if (millisSince(lastSignalBlink) > 750) {
-        signalBlink = !signalBlink;
-        lastSignalBlink = millis();
-      }
-  } else signalBlink = false;
-
-  drawFrame(x, y, 18, 9);
-  drawBox(x + 18, y + 2, 2, 5);
-
-  // blink
-  if (signalBlink) return;
-
-  // battery level
-  drawBox(x + 2, y + 2, batteryLevel * 14 / 100, 5);
-
-  if (batteryLevel <= 19) { // < 10%
-    drawString(String(batteryLevel), x + 7, y + 6, fontMicro);
-  }
-
 }
 
 int checkButton() {

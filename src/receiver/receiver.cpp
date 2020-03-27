@@ -16,6 +16,7 @@
   #include <ESPmDNS.h>
   #include <WiFiUdp.h>
   #include <ArduinoOTA.h>
+  #include <SPI.h>
 
     // Uart serial
   HardwareSerial MySerial(1);
@@ -30,6 +31,8 @@ Smoothed <double> batterySensor;
 Smoothed <double> motorCurrent;
 
 #include "radio.h"
+
+int pwm_PIN = 17;
 
 float signalStrength;
 float lastRssi;
@@ -66,6 +69,12 @@ void setup()
   debug_E("Calculating Ratios");
 
   pinMode(LED, OUTPUT);
+  #ifdef PWM_MODE
+  // ledcSetup(pwm_PIN, 1000, 8); //ledcSetup(ledChannel, freq, resolution);
+  pinMode(pwm_PIN, OUTPUT);
+  // ledcWrite(pwm_PIN, 127);
+  digitalWrite(pwm_PIN, 127);
+  #endif
 
   // 10 seconds average
   batterySensor.begin(SMOOTHED_EXPONENTIAL, 10);
@@ -895,15 +904,21 @@ void setThrottle(uint16_t value)
 
     // UART
     #ifndef FAKE_UART
+    #ifndef PWM_MODE
     UART.nunchuck.valueY = value;
     UART.nunchuck.upperButton = false;
     UART.nunchuck.lowerButton = false;
     UART.setNunchuckValues();
     #endif
+    #endif
+
+
     // PPM
-    //    digitalWrite(throttlePin, HIGH);
-    //    delayMicroseconds(map(throttle, 0, 255, 1000, 2000) );
-    //    digitalWrite(throttlePin, LOW);
+    #ifdef PWM_MODE
+       digitalWrite(pwm_PIN, HIGH);
+       delayMicroseconds(map(throttle, 0, 255, 1000, 2000) );
+       digitalWrite(pwm_PIN, LOW);
+    #endif
 
     // remember throttle for smooth auto stop
     lastThrottle = throttle;
@@ -911,13 +926,32 @@ void setThrottle(uint16_t value)
 
 void setCruise(uint8_t speed) {
 
+  // debug("speed =  "+ String(speed));
     // UART
     #ifndef FAKE_UART
+    #ifndef PWM_MODE
     UART.nunchuck.valueY = 127;
     UART.nunchuck.upperButton = false;
     UART.nunchuck.lowerButton = true;
     UART.setNunchuckValues();
     #endif
+    #endif
+
+    // PPM
+    #ifdef PWM_MODE
+       digitalWrite(pwm_PIN, HIGH);
+       delayMicroseconds(map(127, 0, 255, 1000, 2000) );
+       digitalWrite(pwm_PIN, LOW);
+      // debug("cruiseControlStart =  "+ String(cruiseControlStart));
+      // UART.nunchuck.valueY = 127;
+    UART.nunchuck.upperButton = false;
+    UART.nunchuck.lowerButton = true;
+    UART.setNunchuckValues();
+
+       
+    #endif
+
+
 }
 
 // void speedControl( uint16_t throttle , bool trigger )
@@ -986,22 +1020,40 @@ void getUartData()
 
     // debug
     #ifdef FAKE_UART
-      // int i;
-      batterySensor.add(41 + (rand()%40) / 100.0);
-      telemetry.setVoltage(batterySensor.get());
-      telemetry.setDistance(rand()%30);
-      telemetry.setSpeed(0);
-      telemetry.setMotorCurrent(-21);
-      telemetry.setInputCurrent(12);
-      // telemetry.setAmpHours(i*2);
-      // telemetry.setAmpHoursCharged(i);
-      telemetry.tempFET = 37;
-      telemetry.tempMotor = 60;
+      #ifdef FAKE_UART_DANCE
+        // int i;
+        batterySensor.add(41 + (rand()%40) / 100.0);
+        telemetry.setVoltage(rand()%51);
+        telemetry.setDistance(rand()%30);
+        telemetry.setSpeed(rand()%25);
+        telemetry.setMotorCurrent(-21);
+        telemetry.setInputCurrent(12);
+        // telemetry.setAmpHours(i*2);
+        // telemetry.setAmpHoursCharged(i);
+        telemetry.tempFET = 37;
+        telemetry.tempMotor = 60;
 
-      telemetryUpdated = true;
-      delay(7);
-      // i++;
-      return;
+        telemetryUpdated = true;
+        delay(10);
+        // i++;
+        return;
+        #else
+        batterySensor.add(41 + (rand()%40) / 100.0);
+        telemetry.setVoltage(batterySensor.get());
+        telemetry.setDistance(rand()%30);
+        telemetry.setSpeed(0);
+        telemetry.setMotorCurrent(-21);
+        telemetry.setInputCurrent(12);
+        // telemetry.setAmpHours(i*2);
+        // telemetry.setAmpHoursCharged(i);
+        telemetry.tempFET = 37;
+        telemetry.tempMotor = 60;
+
+        telemetryUpdated = true;
+        delay(7);
+        // i++;
+        return;
+        #endif
     #endif
 
     // Only get what we need

@@ -40,13 +40,18 @@
 
 #endif
 
+#ifdef DEBUG
+  int drivingmodepro = 2;
+#else 
+  int drivingmodepro = 1;
+#endif
 struct RemoteSettings {
   bool valid;
   short minHallValue = MIN_HALL;
   short centerHallValue = CENTER_HALL;
   short maxHallValue = MAX_HALL;
   uint32_t boardID = 0;
-  uint8_t drivingMode = 1;
+  uint8_t drivingMode = drivingmodepro; //change back
   // short odometer   //distance traveled
 } settings;
 
@@ -96,6 +101,8 @@ const float maxVoltage = 4.2;
 const float refVoltage = 3.3; // Feather double-100K resistor divider
 
 unsigned long lastBatterySample = 0; // smooth remote voltage
+
+float maxthrottlecalc;
 
 // Hall Effect throttle
 uint16_t hallValue;
@@ -246,6 +253,8 @@ float getBatteryLevel();
 float batteryLevelVolts();
 float batteryPackPercentage(float voltage );
 void calculateThrottle();
+void drawThrottleCompact(int x, int y);
+int calculateMaxThrottle(float i);
 int checkButton();
 void checkBatteryLevel();
 void coreTask(void * pvParameters );
@@ -263,7 +272,7 @@ void drawDebugPage();
 void drawSignal();
 void drawStringCenter(String value, String caption, uint8_t y);
 void drawString(String string, int x, int y, const GFXfont *font);
-void drawStringCenterFont(String value, String caption, uint8_t y, const GFXfont *fontN, const GFXfont *fontW);
+void drawStringCenterFont(String value, String caption, int x, uint8_t y, const GFXfont *fontN, const GFXfont *fontW);
 void drawOdometerPage();
 void drawThrottle();
 void drawTelemetryPage();
@@ -295,3 +304,5 @@ bool triggerActive();
 bool triggerActiveSafe();
 void updateMainDisplay();
 void vibrate(int ms);
+
+int testvar; //to see how it boots up
