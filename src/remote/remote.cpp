@@ -1946,11 +1946,11 @@ void drawBatteryLevel() { //for remote battery level
   if (signalBlink) return;
 
   // battery level
-  for (uint8_t i = 0; i < 5; i++) {
-    uint8_t p = round((100 / 5) * i);
+  for (uint8_t i = 0; i < 10; i++) {
+    uint8_t p = round((100 / 10) * i);
     if (p <= batteryLevel)
     {
-      drawBox(x + 2 + (3 * i), y + 2, 2, 5);
+      drawBox(x + 1 + (1.5 * i), y + 2, 1, 5);
     }
   }
 
