@@ -43,7 +43,7 @@
 #ifdef DEBUG
   int drivingmodepro = 2;
 #else 
-  int drivingmodepro = 1;
+  int drivingmodepro = 2;
 #endif
 struct RemoteSettings {
   bool valid;

@@ -72,11 +72,11 @@ const int BATTERY_MIN = -17;
 const int BATTERY_MAX = 30;
 
 // default board configuration
-const int C_MAX_SPEED = 20;                    // Max Speed
+const int C_MAX_SPEED = 25;                    // Max Speed
 const int C_MAX_RANGE = 15;                    // MAX RANGE
-const int BATTERY_CELLS = 5;
-const float BATTERY_VOLTAGE_CUTOFF_START = 18; // "Battery Voltage Cutoff Start" Should come directly from VESC Tool
-const float BATTERY_VOLTAGE_CUTOFF_END = 17;   // "Battery Voltage Cutoff End"   Should come directly from VESC Tool
+const int BATTERY_CELLS = 6;
+const float BATTERY_VOLTAGE_CUTOFF_START = 19; // "Battery Voltage Cutoff Start" Should come directly from VESC Tool
+const float BATTERY_VOLTAGE_CUTOFF_END = 18;   // "Battery Voltage Cutoff End"   Should come directly from VESC Tool
 const int BATTERY_TYPE = 1;                    // 0: LI-ION | 1: LIPO
 const int MOTOR_POLES = 14;
 const int WHEEL_DIAMETER = 90;
