@@ -1766,8 +1766,9 @@ void drawMainPage() {
   if (receiverState == CONNECTED) {
 
     // speedometer graph height array
-    uint8_t a[16] = {10, 10, 10, 10, 10, 10, 10, 10, 10,
-                     10, 10, 10, 10, 10, 10, 10
+    #define u 10
+    uint8_t a[16] = {u, u, u, u, u, u, u, u, u,
+                     u, u, u, u, u, u, u
                     };
     y = 52;
 
