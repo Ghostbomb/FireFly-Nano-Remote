@@ -4,7 +4,9 @@
 .clang_complete
 .gcc-flags.json
 .vscode
+.code-workspace
 nano.code-workspace
 FireFly Remote.code-workspace
+FireFly Nano Remote.code-workspace
 Wifi Credentials.h
 .DS_Store 

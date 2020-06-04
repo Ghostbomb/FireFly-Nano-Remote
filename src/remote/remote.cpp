@@ -1759,16 +1759,17 @@ void drawMainPage() {
 
   float speedMax = boardConfig.maxSpeed;
   String m = SPEED_UNIT;
+  if (value == 0) {drawStringCenter(String(value, 0), m, y);}
+  else {drawStringCenter(String(value, 1), m, y);}
 
-  drawStringCenter(String(value, 0), m, y);
-
+  
   if (receiverState == CONNECTED) {
 
     // speedometer graph height array
-    uint8_t a[16] = {3, 3, 4, 4, 5, 6, 7, 8, 10,
-                     11, 13, 15, 17, 20, 24, 28
+    uint8_t a[16] = {10, 10, 10, 10, 10, 10, 10, 10, 10,
+                     10, 10, 10, 10, 10, 10, 10
                     };
-    y = 48;
+    y = 52;
 
     for (uint8_t i = 0; i < 16; i++) {
       h = a[i];
