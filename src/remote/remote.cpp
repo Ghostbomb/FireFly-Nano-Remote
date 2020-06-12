@@ -1797,6 +1797,7 @@ void drawMainPage() {
   }
   value = batteryPackPercentage( telemetry.getVoltage() );
   drawBatteryPercentVoltage(value);
+  drawString(String(telemetry.getVoltage(), 2), 37, 75, fontPico);
   // // --- Battery ---
 
   // y = 74;
@@ -1919,7 +1920,7 @@ void drawBatteryPercentVoltage(float value) {
   int battery = (int) value;
   drawStringCenter(String(battery), "%", y);
 
-  drawString(String(telemetry.getVoltage(), 1), 44, 73, fontPico);
+  
 
 }
 
