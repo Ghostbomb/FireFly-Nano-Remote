@@ -80,5 +80,5 @@ const float BATTERY_VOLTAGE_CUTOFF_END = 35;   // "Battery Voltage Cutoff End"  
 const int BATTERY_TYPE = 1;                    // 0: LI-ION | 1: LIPO
 const int MOTOR_POLES = 14;
 const int WHEEL_DIAMETER = 90;
-const int WHEEL_PULLEY = 36;
-const int MOTOR_PULLEY = 15;
+const int WHEEL_PULLEY = 38;
+const int MOTOR_PULLEY = 14;
